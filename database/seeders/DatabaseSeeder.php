@@ -2,6 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
+use App\Models\Group;
+use App\Models\Image;
+use App\Models\Price;
+use App\Models\Product;
+use App\Models\Shop;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,5 +20,47 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // \App\Models\User::factory(10)->create();
+        $this->call([
+            GroupSeeder::class,
+            ProductSeeder::class,
+            ShopSeeder::class,
+            PriceSeeder::class,
+            ImageSeeder::class,
+            CategorySeeder::class
+        ]);
+
+
+        // $groups=Group::factory()
+        // ->has(Product::factory()->count(3))
+        // ->count(5)
+        // ->create();
+
+
+        /*
+        create 10 groups 3 shops, 30 products total,
+        each product has 5 prices
+        each product has 2 images
+        each product has/belongs to 3 categories
+        */
+        $shops = Shop::factory()->count(3)->create();
+        $groups = Group::factory()->count(10)->create();
+
+
+        foreach ($shops as $shop) {
+            $categories = null;
+            $categories = Category::factory()->count(5)->create();
+            foreach ($groups as $group) {
+                $p = Product::factory()
+                    ->count(1)
+                    ->for($group)
+                    ->for($shop)
+                    ->has(Price::factory()->count(5))
+                    ->has(Image::factory()->count(2))
+                    //->has(Category::factory()->count(1))
+                    ->create();
+
+                $p->first()->categories()->attach($categories->random(2)->pluck('id')->toArray()); //attach two random categories belongs to that shop
+            }
+        }
     }
 }
