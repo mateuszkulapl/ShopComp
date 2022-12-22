@@ -18,7 +18,7 @@
 
         <h3 class="text-red bg-red-500">{{
         
-        $group->priceWeekRange(2)
+        $group->priceWeekRange
         }}</h3>
         <ul>
             @foreach ($group->products as $product)
