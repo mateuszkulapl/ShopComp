@@ -58,13 +58,15 @@ class Group extends Model
      */
     public function priceWeekRange()
     {
-        return $this->hasManyThrough(Price::class, Product::class)->whereDate('prices.created_at', '>',  Carbon::now()->subDays(7));
+        return $this->prices()->whereDate('prices.created_at', '>',  Carbon::now()->subDays(7)); //it gets all the prices from the selected period, not the latest ones
     }
 
     /*
-    todo: get current price range
-    get all products of group,
-    get latest price of each product, but creation date cannot be older than for example 1 week
-
+    * Get the latest price of each product in the group, price can not be older then 7 days
     */
+    public function latestPriceWeekRange()
+    {
+        // return $users = DB::table('prices')->groupBy('prices.product_id')->whereDate('prices.created_at', '>',  Carbon::now()->subDays(7))->get();
+        return $this->priceWeekRange()->latest('prices.created_at')->groupBy('product_id');
+    }
 }

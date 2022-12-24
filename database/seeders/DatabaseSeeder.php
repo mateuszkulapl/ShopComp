@@ -37,13 +37,13 @@ class DatabaseSeeder extends Seeder
 
 
         /*
-        create 10 groups 3 shops, 30 products total,
-        each product has 5 prices
+        create 100 groups 5 shops, 500 products total,
+        each product has 365 prices
         each product has 2 images
         each product has/belongs to 3 categories
         */
-        $shops = Shop::factory()->count(3)->create();
-        $groups = Group::factory()->count(10)->create();
+        $shops = Shop::factory()->count(5)->create();
+        $groups = Group::factory()->count(100)->create();
 
 
         foreach ($shops as $shop) {
@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
                     ->count(1)
                     ->for($group)
                     ->for($shop)
-                    ->has(Price::factory()->count(5))
+                    ->has(Price::factory()->count(365))
                     ->has(Image::factory()->count(2))
                     //->has(Category::factory()->count(1))
                     ->create();

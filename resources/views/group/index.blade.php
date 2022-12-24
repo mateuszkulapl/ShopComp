@@ -14,16 +14,13 @@
     <h1 class="text-2xl">Groups index</h1>
     @foreach ($groups as $group)
     <div>
-        <h2 class="text-xl"><a href="{{ route('group.show', $group->ean) }}">{{ $group->ean }} ({{$group->oldestProduct->title}})</a></h2>
-
-        <h3 class="text-red bg-red-500">{{
-        
-        $group->priceWeekRange
-        }}</h3>
+        <h2 class="text-xl"><a href="{{ route('group.show', $group->ean) }}">EAN: {{ $group->ean }} {{$group->oldestProduct->title}} </a></h2>
+        <p class="text-gray-50 bg-gray-700 p-3">Cena od {{$group->latestPriceWeekRange->min('current')}} do {{$group->latestPriceWeekRange->max('current')}} </p>
+        <h3 class="text-red bg-red-500"></h3>
         <ul>
-            @foreach ($group->products as $product)
+            {{-- @foreach ($group->products as $product)
             <li>{{ $product }}</li>
-            @endforeach
+            @endforeach --}}
         </ul>
     </div>
     @endforeach
