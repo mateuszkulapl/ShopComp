@@ -23,5 +23,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(GroupController::class)->group(function () {
     Route::get('/', 'index')->name('group.index');
-    Route::get('/{group:ean}', 'show')->name('group.show');
+    Route::get('/ean/{group:ean}-{title?}', 'show')->name('group.show');
 });

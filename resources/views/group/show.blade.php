@@ -10,7 +10,7 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 
-<body>
+<body class="bg-slate-800 text-gray-50">
     <h1 class="text-2xl">{{ $group->ean }} Group index</h1>
 
     @foreach ($products as $product)
