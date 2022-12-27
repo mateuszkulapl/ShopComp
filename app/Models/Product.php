@@ -35,6 +35,14 @@ class Product extends Model
     }
 
     /**
+     * Get oldest image for the product.
+     */
+    public function oldestImage()
+    {
+        return $this->hasOne(Image::class)->oldestOfMany();
+    }
+
+    /**
      * Get all of the prices for the product.
      */
     public function prices()

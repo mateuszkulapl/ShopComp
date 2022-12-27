@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,7 +30,7 @@ class Group extends Model
     }
 
     /**
-     * Get all of the images for the shop.
+     * Get all of the images for the group.
      */
     public function images()
     {
@@ -68,5 +69,15 @@ class Group extends Model
     {
         // return $users = DB::table('prices')->groupBy('prices.product_id')->whereDate('prices.created_at', '>',  Carbon::now()->subDays(7))->get();
         return $this->priceWeekRange()->latest('prices.created_at')->groupBy('product_id');
+    }
+
+    public function displayLatestPriceWeekRange()
+    {
+        return 'Cena od ' . number_format($this->latestPriceWeekRange->min('current'), 2, ",") . ' zł do ' . number_format($this->latestPriceWeekRange->max('current'), 2, ",") . " zł";
+    }
+    public function getUrl()
+    {
+
+        return route('group.show', ['group' => $this->ean, 'title' => Str::slug($this->oldestProduct->title)]);
     }
 }

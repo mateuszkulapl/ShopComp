@@ -12,7 +12,7 @@ class GroupController extends Controller
     public function index()
     {
         return view('group.index', [
-            'groups' => Group::latest()->with('oldestProduct', 'latestPriceWeekRange')->paginate(5)
+            'groups' => Group::latest()->with('oldestProduct', 'latestPriceWeekRange','oldestProduct.oldestImage')->paginate(20)
         ]);
     }
 

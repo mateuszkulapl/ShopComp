@@ -16,18 +16,7 @@
     @endif
 
     <div id="przyklady">
-        @foreach ($groups as $group)
-        <div>
-            <h2 class="text-xl"><a href="{{ route('group.show', ['group'=>$group->ean, 'title'=>Str::slug($group->oldestProduct->title)]) }}">EAN: {{ $group->ean }} {{$group->oldestProduct->title}} </a></h2>
-            <p class="p-3">Cena od {{$group->latestPriceWeekRange->min('current')}} do {{$group->latestPriceWeekRange->max('current')}} </p>
-            <h3 class="text-red bg-red-500"></h3>
-            <ul>
-                {{-- @foreach ($group->products as $product)
-            <li>{{ $product }}</li>
-                @endforeach --}}
-            </ul>
-        </div>
-        @endforeach
+        <x-group.grid :groups="$groups" class=" mb-4" />
         {{ $groups->links() }}
     </div>
 </x-layout>

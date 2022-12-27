@@ -1,5 +1,6 @@
+@props([''])
 <section class="flex flex-col h-screen justify-center items-center">
-
+    
     <form action="#" method="get" class="  text-center">
         <label for="search" class=" text-lg">Wyszukaj</label>
         <input type="text" name="search" id="search" class="
