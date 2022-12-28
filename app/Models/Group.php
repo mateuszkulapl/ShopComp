@@ -73,7 +73,11 @@ class Group extends Model
 
     public function displayLatestPriceWeekRange()
     {
-        return 'Cena od ' . number_format($this->latestPriceWeekRange->min('current'), 2, ",") . ' zł do ' . number_format($this->latestPriceWeekRange->max('current'), 2, ",") . " zł";
+
+        if (count($this->latestPriceWeekRange) > 0) {
+            return 'Cena od ' . number_format($this->latestPriceWeekRange->min('current'), 2, ",", "") . ' zł do ' . number_format($this->latestPriceWeekRange->max('current'), 2, ",", "") . " zł";
+        } else
+            return '';
     }
     public function getUrl()
     {

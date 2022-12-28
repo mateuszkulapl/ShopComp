@@ -1,16 +1,33 @@
 <x-layout>
-    <h1 class="text-2xl">{{ $group->ean }} Group index</h1>
-
-    @foreach ($products as $product)
-    <div>
-        <h2 class="text-xl">{{ $product->shop->name }}</h2>
-        <p>{{ $product->title }}</p>
-        <p>{{ $product->url }}</p>
-        <ul>
-            @foreach ($product->prices as $price)
-            <li>{{$price->current}}</li>
+    <h1 class="text-2xl mb-8">EAN: {{ $group->ean }}</h1>
+    <table class=" w-full">
+        <thead>
+            <th>Sklep</th>
+            <th>Cena</th>
+            <th>Cena z dnia</th>
+            <th>Nazwa w sklepie</th>
+            <th>Zdjęcie</th>
+        </thead>
+        <tbody>
+            @foreach ($products as $product)
+            <tr id={{$product->id}}>
+                <td>
+                    {{ $product->shop->name }}
+                </td>
+                <td>
+                    {{ $product->prices->first()->current }}
+                </td>
+                <td>
+                    {{ \Carbon\Carbon::parse($product->prices->first()->created_at)->format('d.m.Y')}}
+                </td>
+                <td>
+                    {{ $product->title}}
+                </td>
+                <td>
+                    <img src="{{ $product->images->first()->url}}" alt="{{ $product->title }}" class=" max-h-10">
+                </td>
+            </tr>
             @endforeach
-        </ul>
-    </div>
-    @endforeach
+        </tbody>
+    </table>
 </x-layout>

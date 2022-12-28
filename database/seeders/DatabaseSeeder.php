@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
                     ->count(1)
                     ->for($group)
                     ->for($shop)
-                    ->has(Price::factory()->count(365))
+                    ->has(Price::factory()->count(52))
                     ->has(Image::factory()->count(2))
                     //->has(Category::factory()->count(1))
                     ->create();
