@@ -19,7 +19,8 @@ class PriceFactory extends Factory
         return [
             'product_id' => Product::factory(),
             'current' => $current,
-            'old' => $old
+            'old' => $old,
+            'created_at'=>$this->faker->dateTimeBetween('-20 days', now())
         ];
     }
 }

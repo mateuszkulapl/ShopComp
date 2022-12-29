@@ -43,11 +43,11 @@ class Product extends Model
     }
 
     /**
-     * Get all of the prices for the product.
+     * Get all of the prices for the product. Order ascending by creation date
      */
     public function prices()
     {
-        return $this->hasMany(Price::class)->latest();
+        return $this->hasMany(Price::class)->oldest();
     }
 
     /**

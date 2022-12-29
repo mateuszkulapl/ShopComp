@@ -15,16 +15,16 @@
                     {{ $product->shop->name }}
                 </td>
                 <td>
-                    {{ $product->prices->first()->current }}
+                    {{ $product->prices->last()->current }}
                 </td>
                 <td>
-                    {{ \Carbon\Carbon::parse($product->prices->first()->created_at)->format('d.m.Y')}}
+                    {{ \Carbon\Carbon::parse($product->prices->last()->created_at)->format('d.m.Y')}}
                 </td>
                 <td>
                     {{ $product->title}}
                 </td>
                 <td>
-                    <img src="{{ $product->images->first()->url}}" alt="{{ $product->title }}" class=" max-h-10">
+                    <img src="{{ $product->images->last()->url}}" alt="{{ $product->title }}" class=" max-h-10">
                 </td>
             </tr>
             @endforeach
