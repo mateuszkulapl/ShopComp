@@ -18,4 +18,12 @@ class Price extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    /***
+     * Get pair of creation date (miliseconds), and current price e.g. [1665266400000,74.61]
+     */
+    public function getXYPair()
+    {
+        return '[' . $this->created_at->startOfDay()->valueOf() . ',' . ($this->current) . ']';
+    }
 }
