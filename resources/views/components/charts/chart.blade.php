@@ -1,5 +1,7 @@
 @props(['products','group'])
-<div id="chart{{$group->ean}}" class="w-full mb-8"></div>
+<div class="w-full h-96 mb-8">
+    <div id="chart{{$group->ean}}" class="w-full"></div>
+</div>
 
 <script>
 
@@ -26,7 +28,31 @@ var options = {
                 }
             }
         ],
-        defaultLocale: "pl"
+        defaultLocale: "pl",
+        toolbar: {
+        show: true,
+        offsetX: 0,
+        offsetY: 0,
+        tools: {
+          download: true,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true,
+          customIcons: []
+        },
+        export: {
+          svg: {
+            filename: @json($group->ean)+@json('_'.\Carbon\Carbon::now()->format('Y-m-d_h:i')),
+          },
+          png: {
+            filename: @json($group->ean)+@json('_'.\Carbon\Carbon::now()->format('Y-m-d_h:i')),
+          }
+        },
+        autoSelected: 'zoom' 
+      },
     },
     dataLabels: {
         enabled: false
@@ -77,7 +103,6 @@ var options = {
             @foreach ($product->prices as $price)
                 {{ $price->getXYPair() }},
             @endforeach
-
         ]
         },
         @endforeach

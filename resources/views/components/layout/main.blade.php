@@ -1,4 +1,4 @@
 @props(['widthClasses'])
-<main {{ $attributes->merge(['class' => 'max-w-7xl w-full mx-auto px-2 ']) }}>
-    {{$slot}}
+<main {{ $attributes->merge(['class' => 'max-w-7xl w-full mx-auto px-2 mb-16']) }}>
+    {{ $slot }}
 </main>
