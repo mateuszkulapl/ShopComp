@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 //use Illuminate\Database\Eloquent\SoftDeletes;
@@ -81,7 +82,22 @@ class Group extends Model
     }
     public function getUrl()
     {
-
         return route('group.show', ['group' => $this->ean, 'title' => Str::slug($this->oldestProduct->title)]);
+    }
+
+
+    /**
+     * Search by group ean, group products title, group products shop name 
+     */
+    public function scopeSearch($query, $searchTerm)
+    {
+        $query = Group::where('ean', 'like', '%' . $searchTerm . '%')
+            ->orWhereHas('products', function (Builder $query) use ($searchTerm) {
+                $query->where('title', 'like', '%' . $searchTerm . '%');
+            })
+            ->orWhereHas('products.shop', function (Builder $query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%');
+            });
+        return $query;
     }
 }

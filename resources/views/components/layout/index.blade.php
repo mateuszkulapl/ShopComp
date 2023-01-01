@@ -1,4 +1,5 @@
 @props(['title' => config('app.name'), 'titleSuffix' => ' | ' . config('app.name'), 'appendTitleSuffix' => false, 'paddingX' => 'px-2', 'showHeader' => true, 'metaDesc' => '', 'chart' => false])
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 

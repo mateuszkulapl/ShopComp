@@ -9,12 +9,41 @@ use Illuminate\Http\Request;
 
 class GroupController extends Controller
 {
-    public function index()
+    public function index($searchTerm = null)
     {
+        $groups = Group::latest();
+        if ($searchTerm) {
+            $groups=$groups->search($searchTerm);
+            $title = $searchTerm . ' - wyniki wyszukiwania';
+            $appendTitleSuffix=true;
+        }
+        else{
+            $title=null;
+            $appendTitleSuffix=false;
+        }
         return view('group.index', [
-            'groups' => Group::latest()->with('oldestProduct', 'latestPriceWeekRange', 'oldestProduct.oldestImage')->paginate(20)
+            'groups' => $groups->with('oldestProduct', 'latestPriceWeekRange', 'oldestProduct.oldestImage')->paginate(20),
+            'searchTerm' => $searchTerm,
+            'title' => $title,
+            'appendTitleSuffix' => $appendTitleSuffix,
+
         ]);
     }
+
+    public function searchPost()
+    {
+        request()->validate([
+            'search' => ['required']
+        ]);
+        return redirect(
+            route(
+                'group.search',
+                ['searchTerm' => request('search'), '#produkty']
+            )
+        );
+    }
+
+
 
     public function getShowView(Group $group)
     {
@@ -41,7 +70,7 @@ class GroupController extends Controller
 
 
         foreach ($products as $key => $product) {
-            $product->color = $apexchartPalette[($key) % count($apexchartPalette)] . "60";
+            $product->color = $apexchartPalette[($key) % count($apexchartPalette)] . "40";
         }
 
         return view('group.show', [
