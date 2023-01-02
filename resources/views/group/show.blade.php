@@ -36,8 +36,13 @@
         </table>
     </div>
 
+    <h2 class="text-xl font-bold mb-2">Wykres cen</h2>
     <x-charts.chart :products="$products" :group="$group" />
 
+    <h2 class="text-xl font-bold mb-2">Historia cen</h2>
     <x-group.price-history-table :products="$products" :group="$group" :priceTable="$priceTable" />
+
+    <h2 class="text-xl font-bold mb-2">Szczegóły produktów</h2>
+    <x-product.products-details :products="$products" />
 
 </x-layout>

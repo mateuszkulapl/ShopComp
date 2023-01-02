@@ -13,13 +13,12 @@ class GroupController extends Controller
     {
         $groups = Group::latest();
         if ($searchTerm) {
-            $groups=$groups->search($searchTerm);
+            $groups = $groups->search($searchTerm);
             $title = $searchTerm . ' - wyniki wyszukiwania';
-            $appendTitleSuffix=true;
-        }
-        else{
-            $title=null;
-            $appendTitleSuffix=false;
+            $appendTitleSuffix = true;
+        } else {
+            $title = null;
+            $appendTitleSuffix = false;
         }
         return view('group.index', [
             'groups' => $groups->with('oldestProduct', 'latestPriceWeekRange', 'oldestProduct.oldestImage')->paginate(20),
@@ -47,7 +46,7 @@ class GroupController extends Controller
 
     public function getShowView(Group $group)
     {
-        $products = $group->products()->with('shop', 'prices', 'images')->get();
+        $products = $group->products()->with('shop', 'prices', 'images', 'categories')->get();
         $priceTable = collect();
         foreach ($products as $product) {
             $value = $product->prices->first()->current;
@@ -70,7 +69,7 @@ class GroupController extends Controller
 
 
         foreach ($products as $key => $product) {
-            $product->color = $apexchartPalette[($key) % count($apexchartPalette)] . "40";
+            $product->color = $apexchartPalette[($key) % count($apexchartPalette)] . "66";
         }
 
         return view('group.show', [

@@ -18,4 +18,10 @@ class Category extends Model
     {
         return $this->belongsToMany(Product::class)->withTimestamps();
     }
+
+
+    public function getUrl()
+    {
+        return '#' . $this->id;
+    }
 }
