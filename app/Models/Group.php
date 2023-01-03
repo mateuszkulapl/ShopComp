@@ -82,7 +82,17 @@ class Group extends Model
     }
     public function getUrl()
     {
-        return route('group.show', ['group' => $this->ean, 'title' => Str::slug($this->oldestProduct->title)]);
+        $this->oldestProduct ? $correctOldestProductTitleSlug = Str::slug($this->oldestProduct->title) : $correctOldestProductTitleSlug = '';
+
+        return route('group.show', ['group' => $this->ean, 'title' => $correctOldestProductTitleSlug]);
+    }
+
+    public function getSeoTitle()
+    {
+        if ($this->oldestProduct)
+            return $this->ean . ' - ' . $this->oldestProduct->title;
+        else
+            return $this->ean;
     }
 
 

@@ -81,11 +81,11 @@ class GroupController extends Controller
 
     public function show(Group $group, String $oldestProductTitleSlug = '')
     {
-        $correctOldestProductTitleSlug = Str::slug($group->oldestProduct->title);
+        $group->oldestProduct ? $correctOldestProductTitleSlug = Str::slug($group->oldestProduct->title) : $correctOldestProductTitleSlug = '';
         if ($correctOldestProductTitleSlug == $oldestProductTitleSlug) {
             return $this->getShowView($group);
         } else {
-            return redirect(route('group.show', [$group, 'title' => Str::slug($group->oldestProduct->title)]), 301);
+            return redirect(route('group.show', [$group, 'title' => $correctOldestProductTitleSlug]), 301);
         }
     }
 }

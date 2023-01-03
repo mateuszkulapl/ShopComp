@@ -23,8 +23,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(GroupController::class)->group(function () {
     Route::get('/', 'index')->name('group.index');
-    Route::get('/ean/{group:ean}-{title?}', 'show')->name('group.show');
-    
+    Route::get('/ean/{group:ean}/{title?}', 'show')->name('group.show')->whereNumber('ean');
+
     Route::post('szukaj/', 'searchPost')->name('group.searchPost');
     Route::get('szukaj/{searchTerm}', 'index')->name('group.search');
 });
