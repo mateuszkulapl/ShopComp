@@ -1,6 +1,6 @@
 @props(['product'])
 <div id="product-{{$product->id}}" class=" mb-2 shadow-sm bg-slate-700 w-full p-2 flex flex-col lg:flex-row">
-    <div class=" flex-1">
+    <div class=" flex-1 basis-3/5">
         <p class="text-lg"><span class=" text-gray-300">Sklep: </span>{{$product->shop->name}}</p>
         <p class=""><span class=" text-gray-300">Adres www sklepu: </span>{{$product->shop->url}}</p>
         <h3 class=""><span class=" text-gray-300">Nazwa w sklepie: </span>{{$product->title}}</h3>
@@ -13,7 +13,7 @@
         </p>
         @endif
     </div>
-    <div class=" flex-1 space-y-2">
+    <div class=" flex-1 space-y-2 basis-2/5">
         @foreach ($product->images as $image)
         <figure>
             <img src="{{$image->url}}" alt="{{$product->title}} {{$product->shop->name}}" class=" max-h-40">
