@@ -26,7 +26,9 @@
                         {{ $product->title }}
                     </td>
                     <td class="px-1">
-                        <img class=" max-h-10" src="{{ $product->images->last()->url }}" alt="{{ $product->title }}">
+                        @if ($product->images->last())
+                            <img class=" max-h-10" src="{{ $product->images->last()->url }}" alt="{{ $product->title }}">
+                        @endif
                     </td>
                 </tr>
             @endforeach

@@ -11,6 +11,7 @@ class Product extends Model
     use HasFactory;
     //use SoftDeletes;
 
+    protected  $fillable = ['shop_id', 'group_id', 'title', 'url'];
     /**
      * Get the shop that the product belongs to.
      */

@@ -14,6 +14,8 @@ class Group extends Model
     use HasFactory;
     //use SoftDeletes;
 
+
+    protected $fillable = ['ean'];
     /**
      * Get all of the products for the group.
      */

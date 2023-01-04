@@ -11,6 +11,7 @@ class Price extends Model
     use HasFactory;
     //use SoftDeletes;
 
+    protected $fillable = ['product_id', 'current', 'old', 'created_at'];
     /**
      * Get the product that the price belongs to.
      */
