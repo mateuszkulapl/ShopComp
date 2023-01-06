@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Image;
 use App\Models\Price;
 use App\Models\Product;
 use App\Models\Shop;
@@ -21,19 +22,20 @@ class ApiController extends Controller
     public function store(Request $request)
     {
         /*note: ISO-8601 dates - UTC */
-        
+
         /*
         TODO:
         validate input
-        store images
         store categories
-        return group url
+        add custom created_at value
         */
 
         // $request->validate([
         //     'shop_name' => 'required',
         //     'ean' => 'required',
         // ]);
+
+        //return request()->input();
 
         $message = collect();
         try {
@@ -54,16 +56,10 @@ class ApiController extends Controller
         );
 
         $product = Product::updateOrCreate(
-            [
-                'shop_id' => $shop->id,
-                'group_id' => $group->id
-            ],
-            [
-                'title' => request()->input('title'),
-                'url' => request()->input('url')
-            ]
+            ['shop_id' => $shop->id, 'group_id' => $group->id],
+            ['title' => request()->input('title'), 'url' => request()->input('url')]
         );
-
+        $product->created_now = $product->wasRecentlyCreated;
 
         $newPrice = new Price();
 
@@ -73,24 +69,54 @@ class ApiController extends Controller
 
         $existingPrice = $product->prices()->whereDate('created_at', Carbon::today())->first();
         if ($existingPrice) {
+
             $existingPrice->current = $newPrice->current;
             $existingPrice->old = $newPrice->old;
 
             if ($existingPrice->isDirty()) {
-                $message->push("Price updated.");
                 $existingPrice->save();
+
+                $existingPrice->updated_now = true;
             } else {
-                $message->push("Same price exist.");
+                $existingPrice->updated_now = false;
             }
+
             $price = $existingPrice;
+            $price->created_now = false;
         } else {
             $newPrice->save();
-            $message->push("Price created.");
             $price = $newPrice;
+            $price->created_now = true;
         }
 
-        $product->load(['shop', 'group']);
+        $postedImages = collect();
+        foreach (request()->input('images') as $postImage) {
+            $image = Image::firstOrCreate(
+                [
+                    'product_id' => $product->id,
+                    'url' => $postImage
+                ]
+            );
+            $image->created_now = $image->wasRecentlyCreated;
+            $postedImages->push($image);
+        }
+
+        $product->group = $group;
+        $product->shop = $shop;
+        $product->price = $price;
+        $product->posted_images = $postedImages;
+
+
         $product->group->append('app_url');
-        return response()->json(['message' => $message->join(' '), 'product' => $product, 'price' => $price], 200);
+        $product->group->created_now = $group->wasRecentlyCreated;
+
+
+        return response()->json(
+            [
+                'message' => $message->join(' '),
+                'product' => $product
+            ],
+            200
+        );
     }
 }

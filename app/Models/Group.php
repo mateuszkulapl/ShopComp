@@ -20,7 +20,7 @@ class Group extends Model
      *
      * @var array
      */
-    protected $visible = ['ean','app_url','created_at','updated_at'];
+    protected $visible = ['ean','app_url','created_now'];
 
 
     // /**

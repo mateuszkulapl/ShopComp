@@ -19,7 +19,7 @@ class Product extends Model
      *
      * @var array
      */
-    protected $visible = ['title','url','created_at','updated_at','shop','group'];
+    protected $visible = ['title','url','shop','group','images','categories','created_now','posted_images','price'];
 
 
     /**
@@ -97,4 +97,5 @@ class Product extends Model
     {
         return $this->belongsToMany(Category::class)->withTimestamps();
     }
+
 }

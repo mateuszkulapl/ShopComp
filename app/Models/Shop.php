@@ -18,7 +18,7 @@ class Shop extends Model
      *
      * @var array
      */
-    protected $visible = ['name','url','created_at','updated_at'];
+    protected $visible = ['name','url'];
 
 
     /**
