@@ -20,7 +20,8 @@ class ApiController extends Controller
      */
     public function store(Request $request)
     {
-
+        /*note: ISO-8601 dates - UTC */
+        
         /*
         TODO:
         validate input
@@ -89,7 +90,7 @@ class ApiController extends Controller
         }
 
         $product->load(['shop', 'group']);
-
+        $product->group->append('app_url');
         return response()->json(['message' => $message->join(' '), 'product' => $product, 'price' => $price], 200);
     }
 }

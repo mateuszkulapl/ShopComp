@@ -5,7 +5,7 @@
     @endif
     <div class="p-2 mt-auto">
         <h2>
-            <a class="after:absolute after:inset-0" href="{{ $group->getUrl() }}">
+            <a class="after:absolute after:inset-0" href="{{ $group->appUrl }}">
                 <span class="block before:content-['EAN:_']">
                     {{ $group->ean }}
                 </span>

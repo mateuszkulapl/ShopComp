@@ -8,7 +8,7 @@
         <p class=""><span class=" text-gray-300">Adres www produktu: </span>{{$product->url}}</p>
         <p class=""><span class=" text-gray-300">Kategorie: </span>
             @foreach ($product->categories as $category )
-            <a href="{{$category->getUrl()}}">{{$category->name}}</a>@if(!$loop->last),@endif
+            <a href="{{$category->url}}">{{$category->name}}</a>@if(!$loop->last),@endif
             @endforeach
         </p>
         @endif

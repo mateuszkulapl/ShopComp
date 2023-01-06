@@ -14,8 +14,22 @@ class Group extends Model
     use HasFactory;
     //use SoftDeletes;
 
-
     protected $fillable = ['ean'];
+    /**
+     * The attributes that should be visible in arrays.
+     *
+     * @var array
+     */
+    protected $visible = ['ean','app_url','created_at','updated_at'];
+
+
+    // /**
+    //  * The accessors to append to the model's array form.
+    //  *
+    //  * @var array
+    //  */
+    // protected $appends = ['url'];
+
     /**
      * Get all of the products for the group.
      */
@@ -53,6 +67,7 @@ class Group extends Model
      */
     public function oldestProduct()
     {
+
         return $this->hasOne(Product::class)->oldestOfMany();
     }
 
@@ -82,10 +97,15 @@ class Group extends Model
         } else
             return '';
     }
-    public function getUrl()
+
+    /**
+     * Determine app url
+     *
+     * @return string
+     */
+    public function getAppUrlAttribute()
     {
         $this->oldestProduct ? $correctOldestProductTitleSlug = Str::slug($this->oldestProduct->title) : $correctOldestProductTitleSlug = '';
-
         return route('group.show', ['group' => $this->ean, 'title' => $correctOldestProductTitleSlug]);
     }
 

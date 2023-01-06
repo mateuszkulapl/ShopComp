@@ -11,6 +11,16 @@ class Shop extends Model
     use HasFactory;
     //use SoftDeletes;
 
+
+
+   /**
+     * The attributes that should be visible in arrays.
+     *
+     * @var array
+     */
+    protected $visible = ['name','url','created_at','updated_at'];
+
+
     /**
      * Get all of the products for the shop.
      */

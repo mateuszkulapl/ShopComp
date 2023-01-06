@@ -20,7 +20,12 @@ class Category extends Model
     }
 
 
-    public function getUrl()
+    /**
+     * Determine app url
+     *
+     * @return string
+     */
+    public function getAppUrlAttribute()
     {
         return '#' . $this->id;
     }

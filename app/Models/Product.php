@@ -12,6 +12,16 @@ class Product extends Model
     //use SoftDeletes;
 
     protected  $fillable = ['shop_id', 'group_id', 'title', 'url'];
+
+
+    /**
+     * The attributes that should be visible in arrays.
+     *
+     * @var array
+     */
+    protected $visible = ['title','url','created_at','updated_at','shop','group'];
+
+
     /**
      * Get the shop that the product belongs to.
      */
