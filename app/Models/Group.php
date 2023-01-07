@@ -14,13 +14,13 @@ class Group extends Model
     use HasFactory;
     //use SoftDeletes;
 
-    protected $fillable = ['ean'];
+    protected $fillable = ['ean', 'created_at', 'updated_at'];
     /**
      * The attributes that should be visible in arrays.
      *
      * @var array
      */
-    protected $visible = ['ean','app_url','created_now'];
+    protected $visible = ['ean', 'app_url', 'created_now'];
 
 
     // /**

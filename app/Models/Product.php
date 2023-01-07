@@ -11,7 +11,7 @@ class Product extends Model
     use HasFactory;
     //use SoftDeletes;
 
-    protected  $fillable = ['shop_id', 'group_id', 'title', 'url'];
+    protected  $fillable = ['shop_id', 'group_id', 'title', 'url', 'created_at', 'updated_at'];
 
 
     /**
@@ -19,7 +19,7 @@ class Product extends Model
      *
      * @var array
      */
-    protected $visible = ['title','url','shop','group','images','categories','created_now','posted_images','price'];
+    protected $visible = ['title', 'url', 'shop', 'group', 'images', 'categories', 'created_now', 'price'];
 
 
     /**
@@ -97,5 +97,4 @@ class Product extends Model
     {
         return $this->belongsToMany(Category::class)->withTimestamps();
     }
-
 }

@@ -48,13 +48,17 @@ class DatabaseSeeder extends Seeder
 
         foreach ($shops as $shop) {
             $categories = null;
-            $categories = Category::factory()->count(5)->create();
+            $categories = Category::factory()->count(5)->create(
+                ['shop_id' => $shop->id]
+            );
+            $categories->get(2)->parent_id = $categories->get(1)->id;
+            $categories->get(1)->parent_id = $categories->get(0)->id;
             foreach ($groups as $group) {
                 $p = Product::factory()
                     ->count(1)
                     ->for($group)
                     ->for($shop)
-                    ->has(Price::factory()->count(52))
+                    ->has(Price::factory()->count(20))
                     ->has(Image::factory()->count(2))
                     //->has(Category::factory()->count(1))
                     ->create();

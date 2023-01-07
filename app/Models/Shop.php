@@ -12,13 +12,14 @@ class Shop extends Model
     //use SoftDeletes;
 
 
+    protected $fillable = ['name', 'url', 'url', 'created_at', 'updated_at'];
 
-   /**
+    /**
      * The attributes that should be visible in arrays.
      *
      * @var array
      */
-    protected $visible = ['name','url'];
+    protected $visible = ['name', 'url'];
 
 
     /**
@@ -43,5 +44,11 @@ class Shop extends Model
     public function images()
     {
         return $this->hasManyThrough(Image::class, Product::class);
+    }
+
+
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
     }
 }

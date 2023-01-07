@@ -12,14 +12,14 @@ class Image extends Model
     //use SoftDeletes;
 
 
-    protected  $fillable = ['product_id','url'];
+    protected  $fillable = ['product_id', 'url', 'created_at', 'updated_at'];
 
     /**
      * The attributes that should be visible in arrays.
      *
      * @var array
      */
-    protected $visible = ['url','created_now'];
+    protected $visible = ['url', 'created_now'];
 
     /**
      * Get the product that the image belongs to.

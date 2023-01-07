@@ -12,7 +12,7 @@ class Price extends Model
     use HasFactory;
     //use SoftDeletes;
 
-    protected $fillable = ['product_id', 'current', 'old', 'created_at'];
+    protected $fillable = ['product_id', 'current', 'old', 'created_at', 'updated_at'];
 
 
     /**
@@ -20,7 +20,7 @@ class Price extends Model
      *
      * @var array
      */
-    protected $visible = ['current','old','created_at','updated_at','created_now','updated_now'];
+    protected $visible = ['current', 'old', 'created_at', 'updated_at', 'created_now', 'updated_now'];
 
     /**
      * Get the product that the price belongs to.
