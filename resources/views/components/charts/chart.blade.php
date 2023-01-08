@@ -55,7 +55,7 @@ var options = {
       },
     },
     dataLabels: {
-        enabled: false
+        enabled: false,
     },
     stroke: {
         curve: 'stepline',
@@ -65,12 +65,59 @@ var options = {
     },
     tooltip: {
         enabled: true,
-        enabledOnSeries: undefined,
         shared: true,
         followCursor: false,
+
+        custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+        const hoverXValue=w.globals.seriesX[seriesIndex][dataPointIndex];
+        let html='';
+        const includesHoverXValue=(element)=>element==hoverXValue;
+        const hoverXIndexes = w.globals.seriesX.map(seriesX => {
+            return seriesX.findIndex(includesHoverXValue);
+        });
+        html=hoverXIndexes.map((xIndex,seriesIndex) => {
+            let value;
+            if(xIndex!==-1)
+            value=w.globals.yLabelFormatters[0](series[seriesIndex][xIndex]);
+            else
+            value="-";
+
+            return `<div class="apexcharts-tooltip-series-group apexcharts-active" style="order: ${seriesIndex}; display: flex;">
+                <span class="apexcharts-tooltip-marker" style="background-color: ${w.globals.colors[seriesIndex]};"></span>
+                <div class="apexcharts-tooltip-text">
+                    <div class="apexcharts-tooltip-y-group">
+                        <span class="apexcharts-tooltip-text-y-label">${w.globals.seriesNames[seriesIndex]}: </span>
+                        <span class="apexcharts-tooltip-text-y-value">${value}</span>
+                    </div>
+                </div>
+            </div>`;
+        });
+        return `<div class="apexcharts-tooltip-title">${w.globals.xLabelFormatter(hoverXValue)}</div>` + html.join('');
+        },
     },
     xaxis: {
-        type: 'datetime'
+        type: 'datetime',
+        labels: {
+            formatter: function (timestamp) {
+                return new Date(timestamp).toLocaleDateString();
+            },
+            datetimeFormatter: {
+                year: 'yyyy',
+                month: 'MMM \'yy',
+                day: 'dd MM yyyy',
+                hour: 'HH:mm'
+            }
+        }
+    },
+    yaxis: {
+        labels: {
+            formatter: function (value) {
+                if(typeof value ==='number')
+                return value.toLocaleString(undefined,{style:"currency",currency:'PLN'});
+                else
+                return value;
+            }
+        },
     },
     theme: {
         mode: 'dark',
@@ -83,30 +130,48 @@ var options = {
         },
     },
     title: {
-    text: 'Cena '+@json($products->first()->title),
-    align: 'center',
-    margin: 0,
-    offsetX: 0,
-    offsetY: 0,
-    floating: false,
-    style: {
-      fontSize:  '16px',
-      fontWeight:  'bold',
-      color:  '#fff'
+        text: 'Cena '+@json($products->first()->title),
+        align: 'center',
+        margin: 0,
+        offsetX: 0,
+        offsetY: 0,
+        floating: false,
+        style: {
+        fontSize:  '16px',
+        fontWeight:  'bold',
+        color:  '#fff'
+        },
     },
+    annotations: {
+        xaxis: [
+            {
+            x: 1643670000000,
+            color: '#fff',
+            borderColor:'#fff',
+
+            label: {
+                style: {
+                color: '#fff',
+                background:'#0f172a',
+                borderColor:'#fff'
+                },
+                text: 'Tarcza antyinflacyjna',
+                orientation:'horizontal'
+            }
+            }
+        ]
     },
     series: [
+
         @foreach ($products as $product)
         {
         name: @json($product->shop->name),
-        data: [
-            @foreach ($product->prices as $price)
-                {{ $price->getXYPair() }},
-            @endforeach
-        ]
+        data: {{$product->getChartPrices()}}
         },
         @endforeach
+
     ]
+
 }
 
 var chart{{$group->ean}} = new ApexCharts(document.querySelector("#chart{{$group->ean}}"), options);
