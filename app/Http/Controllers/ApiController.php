@@ -11,9 +11,44 @@ use App\Models\Shop;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class ApiController extends Controller
 {
+
+
+    public function storeMultiply(Request $request)
+    {
+        $responses = collect();
+        if (!is_array($request->input('product'))) {
+            return response()->json(
+                [
+                    'status_code' => 404,
+                    'description' => 'Product must be an array',
+                ],
+                404
+            );
+        }
+        foreach ($request->input('product') as $key => $requestProduct) {
+
+            $r = null;
+            try {
+                $r = $this->storeOne($requestProduct);
+            } catch (Throwable $e) {
+                $r = [
+                    'status_code' => 500,
+                    'description' => $e->getMessage()
+                ];
+            }
+
+            $responses->put($key, $r);
+        }
+
+        return response()->json(
+            $responses,
+            200
+        );
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -23,66 +58,71 @@ class ApiController extends Controller
      */
     public function store(Request $request)
     {
+        $resp = $this->storeOne($request->input());
+        return response()->json(
+            $resp,
+            200
+        );
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     */
+    public function storeOne($p)
+    {
         /*note: ISO-8601 dates - UTC */
 
         /*
         TODO:
         validate input
-        add custom created_at value
         */
 
         // $request->validate([
         //     'shop_name' => 'required',
         //     'ean' => 'required',
         // ]);
-
-        //return request()->input();
-
-        $creation_date = Carbon::parse(request()->input('creation_date'))->toDateTimeString();
-        // dd($creation_date);
-        $message = collect();
+        $creation_date = Carbon::parse($p['creation_date'])->toDateTimeString();
         try {
-            $shop = Shop::where('name', request()->input('shop_name'))->firstOrFail();
+            $shop = Shop::where('name', $p['shop_name'])->firstOrFail();
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json(
+            return
                 [
-                    '404' =>
-                    [
-                        'description' => 'Shop not found'
-                    ],
-                ],
-                404
-            );
+                    'status_code' => 404,
+                    'description' => 'Shop not found'
+                ];
         }
 
         $group = Group::firstOrCreate(
-            ['ean' => request()->input('ean')]
+            ['ean' => $p['ean']]
         );
         if ($group->wasRecentlyCreated) {
             $group->created_at = $creation_date;
             $group->updated_at = $creation_date;
-            $group->save(['timestamps' => true]);
+            $group->save(['timestamps' => false]);
         }
         $group->created_now = $group->wasRecentlyCreated;
 
         $product = Product::updateOrCreate(
             ['shop_id' => $shop->id, 'group_id' => $group->id],
-            ['title' => request()->input('title'), 'url' => request()->input('url'), 'updated_at' => $creation_date]
+            ['title' => $p['title'], 'url' => $p['url']]
         );
         if ($product->wasRecentlyCreated) {
             $product->created_at = $creation_date;
         }
         $product->updated_at = $creation_date;
-        $product->save(['timestamps' => true]);
-
+        $product->save(['timestamps' => false]);
         $product->created_now = $product->wasRecentlyCreated;
 
 
-        $price = $this->processPostedPrice(request()->input('price_current'), request()->input('price_old'), $product, $creation_date);
-        $postedImages = $this->processPostedImages(request()->input('images'), $product->id, $creation_date);
+        $price = $this->processPostedPrice($p['price_current'], $p['price_old'], $product, $creation_date);
+        if (isset($p['images'])) {
+            $postedImages = $this->processPostedImages($p['images'], $product->id, $creation_date);
+        } else {
+            $postedImages = null;
+        }
 
-
-        $categories = $this->processPostedCategories(request()->input('categories'), $shop->id, $creation_date);
+        $categories = $this->processPostedCategories($p['categories'], $shop->id, $creation_date);
 
 
         $categories_dates = array_fill(0, $categories->count(), ['updated_at' => $creation_date, 'created_at' => $creation_date]);
@@ -96,19 +136,12 @@ class ApiController extends Controller
 
         $product->group->append('app_url');
 
-        return response()->json(
+        return
             [
-                '200' =>
-                [
-                    'description' => 'OK',
-                    'content' =>
-                    [
-                        'product' => $product
-                    ]
-                ],
-            ],
-            404
-        );
+                'status_code' => 200,
+                'description' => 'OK',
+                'product' => $product
+            ];
     }
 
 
@@ -118,6 +151,7 @@ class ApiController extends Controller
      *
      * @param array $postUrls
      * @param int $productId
+     * @param string $creation_date
      * @return Illuminate\Support\Collection collection of posted images with created_now property
      */
     private function processPostedImages($postUrls, $productId, $creation_date)
@@ -148,7 +182,7 @@ class ApiController extends Controller
      * @param float $postPriceCurrent
      * @param float $postPriceOld
      * @param App\Models\Product $product
-     * @return App\Models\Price $product price with created_now and updated_now properties
+     * @return App\Models\Price price with created_now and updated_now properties
      */
     private function processPostedPrice($postPriceCurrent, $postPriceOld, $product, $creation_date)
     {
@@ -158,7 +192,6 @@ class ApiController extends Controller
         $newPrice->current = $postPriceCurrent;
         $newPrice->old = $postPriceOld;
 
-        // $existingPrice = $product->prices()->whereDate('created_at', Carbon::today())->first();
         $existingPrice = $product->prices()->whereDate('created_at', Carbon::parse($creation_date)->startOfDay()->toDateTimeString())->first();
         if ($existingPrice) {
 
@@ -167,7 +200,7 @@ class ApiController extends Controller
 
             if ($existingPrice->isDirty()) {
                 $existingPrice->updated_at = $creation_date;
-                $existingPrice->save(['timestamps' => true]);
+                $existingPrice->save(['timestamps' => false]);
 
                 $existingPrice->updated_now = true;
             } else {
@@ -179,25 +212,28 @@ class ApiController extends Controller
         } else {
             $newPrice->created_at = $creation_date;
             $newPrice->updated_at = $creation_date;
-            $newPrice->save(['timestamps' => true]);
+            $newPrice->save(['timestamps' => false]);
             $price = $newPrice;
             $price->created_now = true;
         }
         return $price;
     }
     /**
-     * Undocumented function
+     * Add categories to product
      *
      * @param array $categories
+     * @param int $shopId
+     * @param string $creation_date
      * @return Illuminate\Support\Collection collection of posted categories with created_now property
      */
     private function processPostedCategories($postCategories, $shopId, $creation_date)
     {
-        // dd(request()->input('categories'));
         $categories = collect();
         foreach ($postCategories as $postCategory) {
-            $category = $this->processPostedCategory($postCategory, $shopId, $creation_date);
-            $categories->push($category);
+            if (!empty($postCategory['name'])) {
+                $category = $this->processPostedCategory($postCategory, $shopId, $creation_date);
+                $categories->push($category);
+            }
         }
         return $categories;
     }
@@ -224,7 +260,7 @@ class ApiController extends Controller
         }
         if ($category->isDirty()) {
             $category->updated_at = $creation_date;
-            $category->save(['timestamps' => true]);
+            $category->save(['timestamps' => false]);
         }
         $category->created_now = $category->wasRecentlyCreated;
         $category->load('ancestor');

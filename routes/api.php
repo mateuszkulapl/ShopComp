@@ -20,3 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::resource('store', ApiController::class)->only('store')->name('store', 'api.store');
+
+Route::post('storemultiply', [ApiController::class, 'storeMultiply']);
