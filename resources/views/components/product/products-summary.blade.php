@@ -27,7 +27,7 @@
                     </td>
                     <td class="px-1">
                         @if ($product->images->last())
-                            <img class=" max-h-10" src="{{ $product->images->last()->url }}" alt="{{ $product->title }}">
+                            <img class=" max-h-10" src="{{ $product->images->last()->getUrl(40) }}" alt="{{ $product->title }}">
                         @endif
                     </td>
                 </tr>

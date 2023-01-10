@@ -22,7 +22,7 @@
     <div class=" flex-1 space-y-2 basis-2/5">
         @foreach ($product->images as $image)
             <figure>
-                <img class=" h-40" src="{{ $image->url }}" alt="{{ $product->title }} {{ $product->shop->name }}">
+                <img class=" h-40" src="{{ $image->getUrl(200) }}" alt="{{ $product->title }} {{ $product->shop->name }}">
                 @if ($loop->last)
                     <figcaption>Źródło: {{ $product->shop->url }}</figcaption>
                 @endif
