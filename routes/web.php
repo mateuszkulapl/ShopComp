@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\MigrationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,3 +30,8 @@ Route::controller(GroupController::class)->group(function () {
     Route::post('szukaj/', 'searchPost')->name('group.searchPost');
     Route::get('szukaj/{searchTerm}', 'index')->name('group.search');
 });
+
+
+
+// Route::get('transfer',[MigrationController::class, 'index']);
+// Route::get('transfer-multiply',[MigrationController::class, 'indexMultiply']);
