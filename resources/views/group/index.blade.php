@@ -31,7 +31,7 @@
         <h2 class=" text-2xl text-center my-4">Produkty pasujące do &quot;{{$searchTerm}}&quot;</h2>
         @endif
         <x-group.grid :groups="$groups" class=" mb-4" />
-        {{ $groups->links() }}
+        {{ $groups->onEachSide(1)->links() }}
     </div>
     @endif
 </x-layout>
