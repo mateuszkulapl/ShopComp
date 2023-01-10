@@ -8,7 +8,7 @@
             <span id="headerSearchTrigger" class=" cursor-pointer">Szukaj</p>
         </div>
     </div>
-    <div id="headerSearch" class=" absolute w-full hidden bg-slate-900 border-t border-slate-800">
+    <div id="headerSearch" class=" absolute z-10 w-full hidden bg-slate-900 border-t border-slate-800">
         <div class="max-w-7xl w-full mx-auto px-2 py-2">
             <form action="{{route('group.searchPost')}}" method="post" class=" flex items-center w-full justify-center">
                 @csrf
