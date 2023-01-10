@@ -65,8 +65,8 @@ var options = {
     },
     tooltip: {
         enabled: true,
-        shared: true,
-        followCursor: false,
+        shared: false,
+        followCursor: true,
 
         custom: ({ series, seriesIndex, dataPointIndex, w }) => {
         const hoverXValue=w.globals.seriesX[seriesIndex][dataPointIndex];
@@ -84,10 +84,10 @@ var options = {
 
             return `<div class="apexcharts-tooltip-series-group apexcharts-active" style="order: ${seriesIndex}; display: flex;">
                 <span class="apexcharts-tooltip-marker" style="background-color: ${w.globals.colors[seriesIndex]};"></span>
-                <div class="apexcharts-tooltip-text">
+                <div class="apexcharts-tooltip-text" style="flex:1">
                     <div class="apexcharts-tooltip-y-group">
-                        <span class="apexcharts-tooltip-text-y-label">${w.globals.seriesNames[seriesIndex]}: </span>
-                        <span class="apexcharts-tooltip-text-y-value">${value}</span>
+                        <span class="apexcharts-tooltip-text-y-label">${w.globals.seriesNames[seriesIndex]}</span>
+                        <span class="apexcharts-tooltip-text-y-value" style="float:right; margin-left:8px;">${value}</span>
                     </div>
                 </div>
             </div>`;
@@ -135,7 +135,7 @@ var options = {
         margin: 0,
         offsetX: 0,
         offsetY: 0,
-        floating: false,
+        floating: true,
         style: {
         fontSize:  '16px',
         fontWeight:  'bold',

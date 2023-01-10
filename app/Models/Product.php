@@ -20,7 +20,7 @@ class Product extends Model
      * @var array
      */
     protected $visible = ['title', 'url', 'shop', 'group', 'images', 'categories', 'created_now', 'price'];
-
+    private $chartPrices=null;
 
     /**
      * Get the shop that the product belongs to.
@@ -96,5 +96,16 @@ class Product extends Model
     public function categories()
     {
         return $this->belongsToMany(Category::class)->withTimestamps();
+    }
+
+
+    public function setChartPrices($chartPrices)
+    {
+        $this->chartPrices=$chartPrices;
+    }
+
+    public function getChartPrices()
+    {
+        return $this->chartPrices;
     }
 }
