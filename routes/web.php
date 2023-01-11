@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MigrationController;
+use App\Http\Controllers\ShopController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,6 +32,11 @@ Route::controller(GroupController::class)->group(function () {
     Route::get('szukaj/{searchTerm}', 'index')->name('group.search');
 });
 
+
+Route::controller(ShopController::class)->group(function () {
+    Route::get('sklep/', 'index')->name('shop.index');
+    Route::get('sklep/{shop}/', 'show')->name('shop.show');
+});
 
 
 // Route::get('transfer',[MigrationController::class, 'index']);

@@ -1,7 +1,7 @@
 @props(['product'])
 <div class=" mb-2 shadow-sm bg-slate-700 w-full p-2 flex flex-col lg:flex-row" id="product-{{ $product->id }}">
     <div class=" flex-1 basis-3/5">
-        <p class="text-lg"><span class=" text-gray-300">Sklep: </span>{{ $product->shop->name }}</p>
+        <p class="text-lg"><span class=" text-gray-300">Sklep: </span><a href="{{ $product->shop->getAppUrlAttribute() }}">{{ $product->shop->name }}</a></p>
         @if ($product->shop->url)
             <p class=""><span class=" text-gray-300">Adres www sklepu: </span>{{ $product->shop->url }}</p>
         @endif

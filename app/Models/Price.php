@@ -48,4 +48,9 @@ class Price extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
+
+    public function currentFormatted()
+    {
+        return number_format($this->current, 2, ",", "") . ' zł ';
+    }
 }

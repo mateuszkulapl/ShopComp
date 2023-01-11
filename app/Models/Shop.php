@@ -51,4 +51,29 @@ class Shop extends Model
     {
         return $this->hasMany(Category::class);
     }
+
+    /**
+     * Get the shop's most recent product.
+     */
+    public function latestProduct()
+    {
+        return $this->hasOne(Product::class)->latestOfMany();
+    }
+    /**
+     * Get the shop's oldest product.
+     */
+    public function oldestProduct()
+    {
+        return $this->hasOne(Product::class)->oldestOfMany();
+    }
+
+    /**
+     * Determine app url
+     *
+     * @return string
+     */
+    public function getAppUrlAttribute()
+    {
+        return route('shop.show', ['shop' => $this->id]);
+    }
 }

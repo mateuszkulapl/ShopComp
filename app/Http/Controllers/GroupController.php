@@ -47,7 +47,7 @@ class GroupController extends Controller
     public function getShowView(Group $group)
     {
         $products = $group->products()->with('shop', 'prices', 'images', 'categories')->get();
-        $products= $products->keyBy('id');
+        $products = $products->keyBy('id');
         $priceTable = collect();
         foreach ($products as $product) {
             $value = $product->prices->first()->current;
@@ -61,8 +61,8 @@ class GroupController extends Controller
         $priceTable = $priceTable->sortBy('created_at');
 
         $priceTable = $priceTable->map(function ($price) {
-            $price->startOfDay=$price->created_at->startOfDay()->getTimestampMs();
-            $price->date=$price->created_at->startOfDay()->format('d.m.Y');
+            $price->startOfDay = $price->created_at->startOfDay()->getTimestampMs();
+            $price->date = $price->created_at->startOfDay()->format('d.m.Y');
             return $price;
         });
 
@@ -82,7 +82,7 @@ class GroupController extends Controller
         });
 
         $apexchartPalette = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'];
-  
+
 
         $priceTableGroupedByProduct = $priceTable->groupBy('product_id');
         $priceTableGroupedByProduct = $priceTableGroupedByProduct->map(function ($item) {
@@ -90,13 +90,13 @@ class GroupController extends Controller
         });
         //dd($priceTableGroupedByProduct);
         foreach ($priceTableGroupedByProduct as $product_id => $priceTableProduct) {
-            $chartPrices=null;
+            $chartPrices = null;
             $chartPrices = $priceTableProduct->map(function ($price, $key) {
-                return [$key,floatval($price->current)];
+                return [$key, floatval($price->current)];
             });
 
-            $diffDates=$priceTableGroupedByDateTimestamp->diffKeys($chartPrices)->map(function ($price,$key) {
-                return [$key,null];
+            $diffDates = $priceTableGroupedByDateTimestamp->diffKeys($chartPrices)->map(function ($price, $key) {
+                return [$key, null];
             });
 
 
@@ -107,10 +107,9 @@ class GroupController extends Controller
 
 
 
-        $index=0;
+        $index = 0;
         foreach ($products as $product_id => $product) {
-            $product->color = $apexchartPalette[($index++) % count($apexchartPalette)] . "66";
-            
+            $product->color = $apexchartPalette[($index++) % count($apexchartPalette)] . "";
         }
 
         return view('group.show', [
