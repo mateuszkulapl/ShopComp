@@ -6,14 +6,14 @@
                 <th class="py-4 border border-slate-600 px-2">Data</th>
                 @foreach ($products as $product)
                     <th class="py-4 border border-slate-600 px-2">
-                        <span class=" w-4 h-4 rounded-full inline-block" style="background:{{ $product->color }}"></span>{{ $product->shop->name }}
+                        <x-icons.circle :color="$product->color" />{{ $product->shop->name }}
                     </th>
                 @endforeach
             </tr>
         </thead>
         <tbody>
             @foreach ($priceTable as $date => $priceTableRow)
-                <tr class="bg-slate-700  hover:bg-slate-800 border-b border-slate-600 hover:duration-300 duration-100" class="border-b border-slate-400" id="{{ $loop->index }}">
+                <tr class="bg-slate-700  hover:bg-slate-600 border-b border-slate-600 hover:duration-300 duration-100" id="{{ $loop->index }}">
                     <td class="border border-slate-600 px-2 bg-slate-900">
                         {{ $date }}
                     </td>

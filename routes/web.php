@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MigrationController;
 use App\Http\Controllers\ShopController;
@@ -37,6 +38,12 @@ Route::controller(ShopController::class)->group(function () {
     Route::get('sklep/', 'index')->name('shop.index');
     Route::get('sklep/{shop}/', 'show')->name('shop.show');
 });
+
+Route::controller(CategoryController::class)->group(function () {
+    Route::get('sklep/{shop}/kategoria/', 'index')->name('category.index');
+    Route::get('sklep/{shop}/kategoria/{category}', 'show')->name('category.show');
+});
+
 
 
 // Route::get('transfer',[MigrationController::class, 'index']);

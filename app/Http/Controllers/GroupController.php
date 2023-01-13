@@ -25,6 +25,7 @@ class GroupController extends Controller
             'searchTerm' => $searchTerm,
             'title' => $title,
             'appendTitleSuffix' => $appendTitleSuffix,
+            'breadcumbs' => collect(),
 
         ]);
     }
@@ -112,10 +113,14 @@ class GroupController extends Controller
             $product->color = $apexchartPalette[($index++) % count($apexchartPalette)] . "";
         }
 
+        $breadcumbs = collect();
+        $breadcumbs->push($group);
+
         return view('group.show', [
             'group' => $group,
             'products' => $products,
-            'priceTable' => $priceTableGroupedByDate
+            'priceTable' => $priceTableGroupedByDate,
+            'breadcumbs' => $breadcumbs,
         ]);
     }
 

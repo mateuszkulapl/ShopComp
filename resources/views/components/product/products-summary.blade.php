@@ -14,7 +14,7 @@
             @foreach ($products as $product)
                 <tr class="bg-slate-700  hover:bg-slate-600 border-b border-slate-600 hover:duration-300 duration-100" id="{{ $product->id }}">
                     <td class="px-1">
-                        <span class=" w-4 h-4 rounded-full inline-block" style="background:{{ $product->color }}"></span>
+                        <x-icons.circle :color="$product->color" />
                         {{ $product->shop->name }}
                     </td>
                     <td class="px-1 text-right">

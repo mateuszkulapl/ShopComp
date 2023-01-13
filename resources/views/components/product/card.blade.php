@@ -8,7 +8,7 @@
     <div class="p-2 mt-auto">
         <h2>
             <a class="after:absolute after:inset-0" href="{{ $product->group->appUrl }}">
-                <span class="block before:content-['EAN:_']">
+                <span class="before:content-['EAN:_'] hidden">
                     {{ $product->group->ean }}
                 </span>
                 @if ($product)

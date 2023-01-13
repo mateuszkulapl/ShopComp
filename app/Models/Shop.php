@@ -76,4 +76,14 @@ class Shop extends Model
     {
         return route('shop.show', ['shop' => $this->id]);
     }
+
+    /**
+     * Determine breadcumb element title
+     *
+     * @return string
+     */
+    public function getBreadcumbTitleAttribute()
+    {
+        return $this->name;
+    }
 }

@@ -60,6 +60,16 @@ class Category extends Model
      */
     public function getAppUrlAttribute()
     {
-        return '#' . $this->id;
+        return route('category.show', ['shop' => $this->shop, 'category' => $this]);
+    }
+
+    /**
+     * Determine breadcumb element title
+     *
+     * @return string
+     */
+    public function getBreadcumbTitleAttribute()
+    {
+        return $this->name;
     }
 }

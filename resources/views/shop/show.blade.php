@@ -1,4 +1,7 @@
-<x-layout :title="$title" :appendTitleSuffix="$appendTitleSuffix">
+<x-layout :title="$title" :appendTitleSuffix="$appendTitleSuffix" :breadcumbs="$breadcumbs">
+    @if ($categoriesCount > 0)
+        <p class=" float-right"><a href="{{ route('category.index', ['shop' => $shop]) }}">Zobacz kategorie</a></p>
+    @endif
     @if ($products->isNotEmpty())
         <div class=" pb-8" id="produkty">
             @if ($searchTerm)

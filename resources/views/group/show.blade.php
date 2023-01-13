@@ -1,4 +1,4 @@
-<x-layout :chart="true" :title="$group->getSeoTitle()" :appendTitleSuffix="true">
+<x-layout :chart="true" :title="$group->getSeoTitle()" :appendTitleSuffix="true" :breadcumbs="$breadcumbs">
     <h1 class="text-4xl mb-8">EAN: {{ $group->ean }}</h1>
 
     @if ($products->isNotEmpty())

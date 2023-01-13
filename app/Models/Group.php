@@ -132,4 +132,14 @@ class Group extends Model
             });
         return $query;
     }
+
+    /**
+     * Determine breadcumb element title
+     *
+     * @return string
+     */
+    public function getBreadcumbTitleAttribute()
+    {
+        return $this->ean." - ". $this->oldestProduct->title;
+    }
 }

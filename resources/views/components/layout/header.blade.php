@@ -2,18 +2,21 @@
 <header {{ $attributes->merge(['class' => 'bg-slate-900 mb-4']) }}>
     <div class="max-w-7xl w-full mx-auto px-2 py-2 flex justify-between">
         <div>
-            <a href="{{route('group.index')}}" class="text-xl">{{ config('app.name') }}</a>
+            <a class="text-xl" href="{{ route('group.index') }}">{{ config('app.name') }}</a>
         </div>
-        <div>
-            <span id="headerSearchTrigger" class=" cursor-pointer">Szukaj</p>
+        <div class=" flex gap-x-4">
+            <p class=" cursor-pointer" id="headerSearchTrigger">
+                <x-icons.search class="h-full w-4 fill-current inline-block" />Szukaj
+            </p>
+            <a href="{{ route('shop.index') }}">Sklepy</a>
         </div>
     </div>
-    <div id="headerSearch" class=" absolute z-10 w-full hidden bg-slate-900 border-t border-slate-800">
+    <div class=" absolute z-10 w-full hidden bg-slate-900 border-t border-slate-800" id="headerSearch">
         <div class="max-w-7xl w-full mx-auto px-2 py-2">
-            <form action="{{route('group.searchPost')}}" method="post" class=" flex items-center w-full justify-center">
+            <form class=" flex items-center w-full justify-center" action="{{ route('group.searchPost') }}" method="post">
                 @csrf
-                <label for="search" class=" text-lg mr-4">Wyszukaj</label>
-                <input type="text" name="search" id="search" class="
+                <label class=" text-lg mr-4" for="search">Wyszukaj</label>
+                <input class="
                 inline-block w-96 py-1 px-2 my-1
                 text-md
                 shadow-sm
@@ -24,10 +27,10 @@
                 ring-1 ring-slate-600
                 rounded-r-none
                 mr-0
-                " placeholder="Podaj nazwę produktu" required value="">
+                " id="search" name="search" type="text" value="" placeholder="Podaj nazwę produktu" required>
 
-                <div id="buttons" class="flex items-center justify-center align-middle space-x-4">
-                    <button type="submit" class="
+                <div class="flex items-center justify-center align-middle space-x-4" id="buttons">
+                    <button class="
                     inline-block py-1 px-4 my-1
                     text-md
                     shadow-sm
@@ -38,7 +41,7 @@
                     ring-1 ring-slate-600
                     rounded-l-none
                     ml-0
-                    ">Szukaj!</button>
+                    " type="submit">Szukaj!</button>
                 </div>
             </form>
             <script>
@@ -57,7 +60,6 @@
                     }
                 }
                 document.addEventListener('click', clickHeaderSearch, false);
-
             </script>
         </div>
     </div>

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Shop;
 use Illuminate\Http\Request;
+use stdClass;
 
 class CategoryController extends Controller
 {
@@ -12,31 +14,31 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Shop $shop)
     {
-        //
+        $categories = $shop->categories()->with('children')->withCount('products')->orderBy('name', 'asc')->get();
+        foreach ($categories as $cat) {
+            $cat->shop = $shop; //prevent additional query
+        }
+        $breadcumbs = collect();
+        $allShops = new stdClass();
+        $allShops->appUrl = route('shop.index');
+        $allShops->breadcumbTitle = "Sklepy";
+        $breadcumbs->push($allShops);
+        $breadcumbs->push($shop);
+
+        $curentPage = new stdClass();
+        $curentPage->appUrl = route('category.index', ['shop' => $shop]);
+        $curentPage->breadcumbTitle = "Kategorie";
+        $breadcumbs->push($curentPage);
+
+        return view('category.index', [
+            'shop' => $shop,
+            'categories' => $categories,
+            'breadcumbs' => $breadcumbs,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -44,42 +46,38 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show(Shop $shop, Category $category)
     {
-        //
-    }
+        if ($category->shop != $shop)
+            throw new \Illuminate\Database\Eloquent\ModelNotFoundException;
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Category $category)
-    {
-        //
-    }
+        $category->load('ancestor', 'products', 'products.group', 'products.group.oldestProduct', 'products.latestPrice', 'products.oldestImage');
+        $categories = $category->children()->with('children')->withCount('products')->orderBy('name', 'asc')->get();
+        foreach ($categories as $cat) {
+            $cat->shop = $shop; //prevent additional query
+        }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Category $category)
-    {
-        //
-    }
+        $breadcumbs = collect();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Category $category)
-    {
-        //
+        $allShops = new stdClass();
+        $allShops->appUrl = route('shop.index');
+        $allShops->breadcumbTitle = "Sklepy";
+        $breadcumbs->push($allShops);
+
+        $breadcumbs->push($shop);
+
+        $allCats = new stdClass();
+        $allCats->appUrl = route('category.index', ['shop' => $shop]);
+        $allCats->breadcumbTitle = "Kategorie";
+        $breadcumbs->push($allCats);
+        $breadcumbs->push($category);
+
+        return view('category.show', [
+            'shop' => $shop,
+            'category' => $category,
+            'categories' => $categories,
+            'breadcumbs' => $breadcumbs,
+            'products' => $category->products()->latest()->paginate(30)
+        ]);
     }
 }
