@@ -6,8 +6,10 @@
     <p>Liczba produktów: {{ number_format($shop->products_count, 0, null, ' ') }}</p>
     <p>Liczba kategorii: {{ number_format($shop->categories_count, 0, null, ' ') }}</p>
 
+    @if($shop->oldestProduct)
     <p>Pierwszy produkt dodany {{ $shop->oldestProduct->created_at->diffForHumans() }}</p>
     <p>Najnowszy produkt dodany {{ $shop->latestProduct->created_at->diffForHumans() }}</p>
+    @endif
 
 
 </div>

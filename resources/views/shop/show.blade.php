@@ -12,5 +12,7 @@
             <x-product.grid class=" mb-4" :products="$products" />
             {{ $products->onEachSide(1)->links() }}
         </div>
+    @else
+    <h1 class=" text-2xl my-4">Brak danych o produktach w sklepie {{ $shop->name }}. Wróć później.</h1>
     @endif
 </x-layout>

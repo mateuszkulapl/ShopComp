@@ -82,7 +82,8 @@ class ApiController extends Controller
         //     'shop_name' => 'required',
         //     'ean' => 'required',
         // ]);
-        $creation_date = Carbon::parse($p['creation_date'])->toDateTimeString();
+        //$creation_date = Carbon::parse($p['creation_date'])->toDateTimeString();
+        $creation_date = Carbon::now()->toDateTimeString();
         try {
             $shop = Shop::where('name', $p['shop_name'])->firstOrFail();
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -190,7 +191,7 @@ class ApiController extends Controller
 
         $newPrice->product_id = $product->id;
         $newPrice->current = $postPriceCurrent;
-        $newPrice->old = $postPriceOld;
+        $newPrice->old = $postPriceOld <= $postPriceCurrent ? null : $postPriceOld;
 
         $existingPrice = $product->prices()->whereDate('created_at', Carbon::parse($creation_date)->startOfDay()->toDateTimeString())->first();
         if ($existingPrice) {
@@ -228,6 +229,7 @@ class ApiController extends Controller
      */
     private function processPostedCategories($postCategories, $shopId, $creation_date)
     {
+        //TODO: prevent recursion
         $categories = collect();
         foreach ($postCategories as $postCategory) {
             if (!empty($postCategory['name'])) {
@@ -250,8 +252,8 @@ class ApiController extends Controller
                 'updated_at' => $creation_date
             ]
         );
-        if (isset($postCategory['parent_category'])) {
-            $parent = $this->processPostedCategory($postCategory['parent_category'], $shopId, $creation_date);
+        if (isset($postCategory['parent'])) {
+            $parent = $this->processPostedCategory($postCategory['parent'], $shopId, $creation_date);
             $category->parent_id = $parent->id;
         }
 

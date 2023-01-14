@@ -3,7 +3,7 @@
 
     <h1 class=" text-4xl mb-4">{{ $category->name }} w sklepie {{ $shop->name }}</h1>
     @if ($categories->isNotEmpty())
-        <h2>Podkategorie</h2>
+        <h2 class=" text-2xl mb-4">Podkategorie:</h2>
 
         <x-category.grid class=" mb-4" :categories="$categories" />
     @else

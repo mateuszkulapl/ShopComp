@@ -20,17 +20,7 @@ class CategoryController extends Controller
         foreach ($categories as $cat) {
             $cat->shop = $shop; //prevent additional query
         }
-        $breadcumbs = collect();
-        $allShops = new stdClass();
-        $allShops->appUrl = route('shop.index');
-        $allShops->breadcumbTitle = "Sklepy";
-        $breadcumbs->push($allShops);
-        $breadcumbs->push($shop);
-
-        $curentPage = new stdClass();
-        $curentPage->appUrl = route('category.index', ['shop' => $shop]);
-        $curentPage->breadcumbTitle = "Kategorie";
-        $breadcumbs->push($curentPage);
+        $breadcumbs = $this->getCategoryBreadcumbs($shop);
 
         return view('category.index', [
             'shop' => $shop,
@@ -57,6 +47,22 @@ class CategoryController extends Controller
             $cat->shop = $shop; //prevent additional query
         }
 
+
+
+
+        $breadcumbs = $this->getCategoryBreadcumbs($shop, $category);
+
+        return view('category.show', [
+            'shop' => $shop,
+            'category' => $category,
+            'categories' => $categories,
+            'breadcumbs' => $breadcumbs,
+            'products' => $category->products()->latest()->paginate(30)
+        ]);
+    }
+
+    private function getCategoryBreadcumbs($shop, $category = null)
+    {
         $breadcumbs = collect();
 
         $allShops = new stdClass();
@@ -66,18 +72,21 @@ class CategoryController extends Controller
 
         $breadcumbs->push($shop);
 
+
         $allCats = new stdClass();
         $allCats->appUrl = route('category.index', ['shop' => $shop]);
         $allCats->breadcumbTitle = "Kategorie";
-        $breadcumbs->push($allCats);
-        $breadcumbs->push($category);
 
-        return view('category.show', [
-            'shop' => $shop,
-            'category' => $category,
-            'categories' => $categories,
-            'breadcumbs' => $breadcumbs,
-            'products' => $category->products()->latest()->paginate(30)
-        ]);
+        $categoriesBreadcumbs = collect();
+        if ($category) {
+            $currentLevel = $category;
+            $categoriesBreadcumbs->push($currentLevel);
+            while ($currentLevel->ancestor) {
+                $currentLevel = $currentLevel->ancestor;
+                $categoriesBreadcumbs->push($currentLevel);
+            }
+            $breadcumbs = $breadcumbs->concat($categoriesBreadcumbs->reverse());
+        }
+        return $breadcumbs;
     }
 }
