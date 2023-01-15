@@ -11,7 +11,7 @@ class Category extends Model
     use HasFactory;
     //use SoftDeletes;
 
-    protected $fillable = ['name', 'shop_id', 'parent_id', 'url', 'created_at', 'updated_at'];
+    protected $fillable = ['name', 'shop_id', 'parent_id', 'url', 'shop_unique_cat_key', 'created_at', 'updated_at'];
 
     /**
      * The attributes that should be visible in arrays.

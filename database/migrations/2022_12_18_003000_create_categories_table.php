@@ -21,6 +21,7 @@ class CreateCategoriesTable extends Migration
             $table->foreignIdFor(Shop::class)->constrained()->cascadeOnDelete(); //delete shop categories on shop deletion
             $table->string('name');
             $table->string('url')->nullable();
+            $table->string('shop_unique_cat_key');
             $table->timestamps();
             $table->softDeletes();
         });

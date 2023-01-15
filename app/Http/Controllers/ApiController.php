@@ -232,7 +232,7 @@ class ApiController extends Controller
         //TODO: prevent recursion
         $categories = collect();
         foreach ($postCategories as $postCategory) {
-            if (!empty($postCategory['name'])) {
+            if (!empty($postCategory['id'])) {
                 $category = $this->processPostedCategory($postCategory, $shopId, $creation_date);
                 $categories->push($category);
             }
@@ -242,24 +242,29 @@ class ApiController extends Controller
 
     private function processPostedCategory($postCategory, $shopId, $creation_date)
     {
+        $parent_id=null;
+        if (isset($postCategory['parent'])) {
+            $parent = $this->processPostedCategory($postCategory['parent'], $shopId, $creation_date);
+            $parent_id=$parent->id;
+        }
+
         $category = Category::firstOrCreate(
             [
-                'name' => $postCategory['name'],
+                'shop_unique_cat_key' => $postCategory['id'],
                 'shop_id' => $shopId
             ],
             [
                 'created_at' => $creation_date,
-                'updated_at' => $creation_date
+                'updated_at' => $creation_date,
+                'name' => $postCategory['name']
             ]
         );
-        if (isset($postCategory['parent'])) {
-            $parent = $this->processPostedCategory($postCategory['parent'], $shopId, $creation_date);
-            $category->parent_id = $parent->id;
-        }
-
+        $category->parent_id = $parent_id;
         if (isset($postCategory['url'])) {
             $category->url = $postCategory['url'];
         }
+        $category->name = $postCategory['name'];
+
         if ($category->isDirty()) {
             $category->updated_at = $creation_date;
             $category->save(['timestamps' => false]);
