@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function index(Shop $shop)
     {
-        $categories = $shop->categories()->with('children')->withCount('products')->orderBy('name', 'asc')->get();
+        $categories = $shop->categories()->where('parent_id', null)->with('children')->withCount('products')->orderBy('name', 'asc')->get();
         foreach ($categories as $cat) {
             $cat->shop = $shop; //prevent additional query
         }
@@ -47,17 +47,25 @@ class CategoryController extends Controller
             $cat->shop = $shop; //prevent additional query
         }
 
-
-
+        $products = $category->products()->latest()->paginate(30)->fragment('produkty');
 
         $breadcumbs = $this->getCategoryBreadcumbs($shop, $category);
+
+
+        if (!$products->onFirstPage()) {
+            $pageBreadcumb = new stdClass();
+            $pageBreadcumb->appUrl = '';
+            $pageBreadcumb->breadcumbTitle = "Strona " . $products->currentPage();
+            $breadcumbs->push($pageBreadcumb);
+        }
+
 
         return view('category.show', [
             'shop' => $shop,
             'category' => $category,
             'categories' => $categories,
             'breadcumbs' => $breadcumbs,
-            'products' => $category->products()->latest()->paginate(30)
+            'products' => $products
         ]);
     }
 
@@ -76,6 +84,7 @@ class CategoryController extends Controller
         $allCats = new stdClass();
         $allCats->appUrl = route('category.index', ['shop' => $shop]);
         $allCats->breadcumbTitle = "Kategorie";
+        $breadcumbs->push($allCats);
 
         $categoriesBreadcumbs = collect();
         if ($category) {

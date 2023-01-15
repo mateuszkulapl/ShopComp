@@ -9,6 +9,11 @@
     @else
         {{-- <p>Brak podkategorii</p> --}}
     @endif
-    <x-product.grid class=" mb-4" :products="$products" />
-    {{ $products->onEachSide(1)->links() }}
+    @if ($products->isNotEmpty())
+    <div id="produkty">
+        <h2 class=" text-2xl mb-4">Produkty:</h2>
+        <x-product.grid class=" mb-4" :products="$products" />
+        {{ $products->onEachSide(1)->links() }}
+    </div>
+    @endif
 </x-layout>

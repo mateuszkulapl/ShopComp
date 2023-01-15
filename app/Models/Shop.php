@@ -84,6 +84,6 @@ class Shop extends Model
      */
     public function getBreadcumbTitleAttribute()
     {
-        return $this->name;
+        return ucfirst($this->name);
     }
 }

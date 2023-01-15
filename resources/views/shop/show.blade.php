@@ -1,6 +1,6 @@
 <x-layout :title="$title" :appendTitleSuffix="$appendTitleSuffix" :breadcumbs="$breadcumbs">
     @if ($categoriesCount > 0)
-        <p class=" float-right"><a href="{{ route('category.index', ['shop' => $shop]) }}">Zobacz kategorie</a></p>
+        <p class=" float-right"><a href="{{ route('category.index', ['shop' => $shop]) }}" class="p-2 bg-slate-900 rounded-md hover:bg-slate-700 border border-slate-700 hover:border-slate-600 ">Zobacz kategorie</a></p>
     @endif
     @if ($products->isNotEmpty())
         <div class=" pb-8" id="produkty">
