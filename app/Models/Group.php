@@ -93,7 +93,12 @@ class Group extends Model
     {
 
         if (count($this->latestPriceWeekRange) > 0) {
-            return 'Cena od ' . number_format($this->latestPriceWeekRange->min('current'), 2, ",", "") . ' zł do ' . number_format($this->latestPriceWeekRange->max('current'), 2, ",", "") . " zł";
+            $min = $this->latestPriceWeekRange->min('current');
+            $max = $this->latestPriceWeekRange->max('current');
+            if ($min != $max)
+                return 'Cena od ' . number_format($min, 2, ",", "") . ' zł do ' . number_format($max, 2, ",", "") . " zł";
+            else
+                return 'Cena ' . number_format($min, 2, ",", "") . ' zł';
         } else
             return '';
     }
@@ -140,6 +145,6 @@ class Group extends Model
      */
     public function getBreadcumbTitleAttribute()
     {
-        return $this->ean." - ". $this->oldestProduct->title;
+        return $this->ean . " - " . $this->oldestProduct->title;
     }
 }
