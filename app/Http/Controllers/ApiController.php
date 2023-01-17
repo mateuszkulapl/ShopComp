@@ -123,11 +123,13 @@ class ApiController extends Controller
             $postedImages = null;
         }
 
-        $categories = $this->processPostedCategories($p['categories'], $shop->id, $creation_date);
+        $categories = [];
 
-
-        $categories_dates = array_fill(0, $categories->count(), ['updated_at' => $creation_date, 'created_at' => $creation_date]);
-        $product->categories()->sync($categories->pluck('id'), $categories_dates);
+        if (isset($p['categories'])) {
+            $categories = $this->processPostedCategories($p['categories'], $shop->id, $creation_date);
+            $categories_dates = array_fill(0, $categories->count(), ['updated_at' => $creation_date, 'created_at' => $creation_date]);
+            $product->categories()->sync($categories->pluck('id'), $categories_dates);
+        }
 
         $product->group = $group;
         $product->shop = $shop;
@@ -242,10 +244,10 @@ class ApiController extends Controller
 
     private function processPostedCategory($postCategory, $shopId, $creation_date)
     {
-        $parent_id=null;
+        $parent_id = null;
         if (isset($postCategory['parent'])) {
             $parent = $this->processPostedCategory($postCategory['parent'], $shopId, $creation_date);
-            $parent_id=$parent->id;
+            $parent_id = $parent->id;
         }
 
         $category = Category::firstOrCreate(
