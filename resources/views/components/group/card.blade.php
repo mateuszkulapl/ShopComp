@@ -4,6 +4,10 @@
         <div class="bg-white h-48 flex  items-center rounded-t-md">
             <img class="max-w-full max-h-full w-auto mx-auto " src="{{ $group->oldestProduct->oldestImage->getUrl(200) }}" alt="{{ $group->oldestProduct->title }}">
         </div>
+    @else
+    <div class="bg-gray-800 h-48 flex  items-center rounded-t-md justify-center">
+        <span class=" text-center text-slate-400 text-sm">Brak zdjęcia</span>
+    </div>
     @endif
     <div class="px-2 pt-2 pb-1">
         <h2>

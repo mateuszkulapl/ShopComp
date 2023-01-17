@@ -3,7 +3,9 @@
     <a class="after:absolute after:inset-0" href="{{ $category->appUrl }}">
         <h2 class=" text-2xl mb-2 font-bold">{{ $category->name }}</h2>
     </a>
-    <p>Liczba produktów: {{ number_format($category->products_count, 0, null, ' ') }}</p>
-    <p>Liczba podkategorii: {{ number_format($category->children->count(), 0, null, ' ') }}</p>
+    <div class="mt-auto">
+        <p>Liczba produktów: {{ number_format($category->products_count, 0, null, ' ') }}</p>
+        <p>Liczba podkategorii: {{ number_format($category->children->count(), 0, null, ' ') }}</p>
+    </div>
 
 </div>
