@@ -15,7 +15,10 @@
         @if (!$product->categories->isEmpty())
             <p class=""><span class=" text-gray-300">Kategorie: </span>
                 @foreach ($product->categories as $category)
-                    <a href="{{ $category->appUrl }}">{{ $category->name }}</a>@if (!$loop->last) | @endif
+                    <a href="{{ $category->appUrl }}">{{ $category->name }}</a>
+                    @if (!$loop->last)
+                        <span class=" text-gray-300"> | </span>
+                    @endif
                 @endforeach
             </p>
         @endif
