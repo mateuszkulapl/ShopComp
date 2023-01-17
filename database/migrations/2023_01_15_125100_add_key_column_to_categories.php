@@ -14,9 +14,9 @@ class AddKeyColumnToCategories extends Migration
     public function up()
     {
 
-        Schema::table('categories', function (Blueprint $table) {
-            $table->string('shop_unique_cat_key')->after('url');
-        });
+        // Schema::table('categories', function (Blueprint $table) {
+        //     $table->string('shop_unique_cat_key')->after('url');
+        // });
     }
 
     /**
@@ -26,8 +26,8 @@ class AddKeyColumnToCategories extends Migration
      */
     public function down()
     {
-        Schema::table('categories', function(Blueprint $table) {
-            $table->dropColumn('shop_unique_cat_key');
-        });
+        // Schema::table('categories', function(Blueprint $table) {
+        //     $table->dropColumn('shop_unique_cat_key');
+        // });
     }
 }
