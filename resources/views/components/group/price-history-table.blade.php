@@ -36,7 +36,7 @@
                         ])>
                             {{ $price }}
                             @if ($old != 0)
-                                <s class=" text-xs">{{ $old }}</small>
+                                <s class=" text-xs">{{ $old }}</s>
                             @endif
                             @if ($change != 0)
                                 <small class=" text-xs">{{ $change > 0 ? '+' . $change : '' . $change }}</small>
