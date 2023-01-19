@@ -13,14 +13,15 @@
             <p class=""><span class=" text-gray-300">Adres www produktu: </span>{{ $product->url }}</p>
         @endif
         @if (!$product->categories->isEmpty())
-            <p class=""><span class=" text-gray-300">Kategorie: </span>
+            <div class="block space-x-1">
+                <span class=" text-gray-300">Kategorie: </span>
                 @foreach ($product->categories as $category)
-                    <a href="{{ $category->appUrl }}">{{ $category->name }}</a>
-                    @if (!$loop->last)
-                        <span class=" text-gray-300"> | </span>
-                    @endif
+                    <a class=" duration-100 hover:duration-300 bg-slate-600 hover:bg-slate-500 px-1 py-0 mt-1" href="{{ $category->appUrl }}">{{ $category->name }}</a>
+                    {{-- @if (!$loop->last)
+                    <span class=" text-gray-300"> | </span>
+                    @endif --}}
                 @endforeach
-            </p>
+            </div>
         @endif
     </div>
     <div class=" flex-1 space-y-2 basis-2/5">
@@ -28,7 +29,7 @@
             <figure>
                 <img class=" h-40" src="{{ $image->getUrl(200) }}" alt="{{ $product->title }} {{ $product->shop->name }}">
                 @if ($loop->last)
-                    <figcaption>Źródło: {{ $product->shop->url }}</figcaption>
+                    <figcaption>Źródło: {{ $product->shop->url ? $product->shop->url : $product->shop->name }}</figcaption>
                 @endif
             </figure>
         @endforeach

@@ -11,7 +11,7 @@ class GroupController extends Controller
 {
     public function index($searchTerm = null)
     {
-        $groups = Group::latest();
+        $groups = Group::latest()->with('oldestProduct', 'latestPriceWeekRange', 'oldestProduct.oldestImage');
         if ($searchTerm) {
             $groups = $groups->search($searchTerm);
             $title = $searchTerm . ' - wyniki wyszukiwania';
@@ -20,14 +20,15 @@ class GroupController extends Controller
             $title = null;
             $appendTitleSuffix = false;
         }
+        $groups=$groups->withCount('products');
         return view('group.index', [
-            'groups' => $groups->with('oldestProduct', 'latestPriceWeekRange', 'oldestProduct.oldestImage')->paginate(30),
+            'groups' => $groups->paginate(30),
             'searchTerm' => $searchTerm,
             'title' => $title,
             'appendTitleSuffix' => $appendTitleSuffix,
             'breadcumbs' => collect(),
-
         ]);
+        
     }
 
     public function searchPost()

@@ -1,17 +1,8 @@
-<x-layout showHeader="{{ $groups->currentPage() != 1 }}" :title="$title" :appendTitleSuffix="$appendTitleSuffix" :breadcumbs="$breadcumbs" showBreadcumbs="0">
+<x-layout  showHeader="true" showSearchButton="{{ $groups->currentPage() != 1 }}" :title="$title" :appendTitleSuffix="$appendTitleSuffix" :breadcumbs="$breadcumbs" showBreadcumbs="0">
     @if ($groups->currentPage() == 1)
         <x-search :searchTerm="$searchTerm" :emptySearchResults="$groups->isEmpty() && $searchTerm">
             <x-slot name="additionalButtons">
-                @if (!$searchTerm)
-                    <a class="
-                inline-block px-4 py-2 m-0 text-sm shadow-sm
-                bg-slate-700 focus:bg-slate-500 hover:bg-slate-600 active:bg-slate-400
-                border-none
-                rounded-lg
-                outline-none
-                ring-1 ring-slate-400 focus:ring-slate-200
-                " href="#produkty">Zobacz przykłady</a>
-                @else
+                @if ($searchTerm)
                     <a class="
                 inline-block px-4 py-2 m-0 text-sm shadow-sm
                 bg-slate-700 focus:bg-slate-500 hover:bg-slate-600 active:bg-slate-400
@@ -21,14 +12,6 @@
                 ring-1 ring-slate-400 focus:ring-slate-200
                 " href="/">Strona główna</a>
                 @endif
-                <a class="
-                inline-block px-4 py-2 m-0 text-sm shadow-sm
-                bg-slate-700 focus:bg-slate-500 hover:bg-slate-600 active:bg-slate-400
-                border-none
-                rounded-lg
-                outline-none
-                ring-1 ring-slate-400 focus:ring-slate-200
-                " href="{{ route('shop.index') }}">Sklepy</a>
             </x-slot>
 
         </x-search>

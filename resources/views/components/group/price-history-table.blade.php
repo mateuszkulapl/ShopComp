@@ -21,20 +21,27 @@
                         @php
                             $change = null;
                             $price = null;
+                            $old = null;
                             if ($priceTableRow->has($product->id)) {
                                 $change = $priceTableRow->get($product->id)->change;
-                                $price = $priceTableRow->get($product->id)->current;
+                                $price = $priceTableRow->get($product->id)->currentFormatted();
+                                $old = $priceTableRow->get($product->id)->old;
                             }
                         @endphp
+
                         <td @class([
                             'bg-rose-900' => $change > 0,
                             'bg-green-900' => $change < 0,
                             'border border-slate-600 px-2',
                         ])>
                             {{ $price }}
+                            @if ($old != 0)
+                                <s class=" text-xs">{{ $old }}</small>
+                            @endif
                             @if ($change != 0)
                                 <small class=" text-xs">{{ $change > 0 ? '+' . $change : '' . $change }}</small>
                             @endif
+
                         </td>
                         </td>
                     @endforeach
