@@ -4,10 +4,10 @@
         <thead class=" bg-slate-900 text-left">
             <tr class="border-b border-slate-400">
                 <th class="py-4 px-1 ">Sklep</th>
-                <th class="py-4 px-1 ">Cena</th>
+                <th class="py-4 px-1  text-right pr-4">Cena</th>
                 <th class="py-4 px-1 ">Cena z dnia</th>
                 <th class="py-4 px-1 ">Nazwa w sklepie</th>
-                <th class="py-4 px-1 ">Zdjęcie</th>
+                {{-- <th class="py-4 px-1 ">Zdjęcie</th> --}}
             </tr>
         </thead>
         <tbody class="">
@@ -17,8 +17,11 @@
                         <x-icons.circle :color="$product->color" />
                         {{ $product->shop->name }}
                     </td>
-                    <td class="px-1 text-right">
-                        {{ $product->prices->last()->current }}
+                    <td class="px-1 text-right pr-4">
+                        {{ $product->prices->last()->currentFormatted() }}
+                        @if($product->prices->last()->old)
+                            <s>{{$product->prices->last()->oldFormatted()}}</s>
+                        @endif
                     </td>
                     <td class="px-1">
                         {{ \Carbon\Carbon::parse($product->prices->last()->created_at)->format('d.m.Y') }}
@@ -26,11 +29,11 @@
                     <td class="px-1">
                         {{ $product->title }}
                     </td>
-                    <td class="px-1">
+                    {{-- <td class="px-1">
                         @if ($product->images->last())
                             <img class=" max-h-10" src="{{ $product->images->last()->getUrl(40) }}" alt="{{ $product->title }}">
                         @endif
-                    </td>
+                    </td> --}}
                 </tr>
             @endforeach
         </tbody>

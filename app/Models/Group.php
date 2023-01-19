@@ -147,4 +147,19 @@ class Group extends Model
     {
         return $this->ean . " - " . $this->oldestProduct->title;
     }
+
+
+    public function getProductNumberText()
+    {
+        if($this->products_count)
+        {
+            if($this->products_count==1)
+            $shopVar="sklepu";
+            else
+            $shopVar="sklepów";
+            $output="Dane z $this->products_count $shopVar";
+            return $output;
+        }
+        return '';
+    }
 }

@@ -53,4 +53,8 @@ class Price extends Model
     {
         return number_format($this->current, 2, ",", "") . ' zł ';
     }
+    public function oldFormatted()
+    {
+        return number_format($this->old, 2, ",", "") . ' zł ';
+    }
 }

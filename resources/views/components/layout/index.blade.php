@@ -1,4 +1,4 @@
-@props(['title' => config('app.name'), 'titleSuffix' => ' | ' . config('app.name'), 'appendTitleSuffix' => false, 'paddingX' => 'px-2', 'showHeader' => true, 'metaDesc' => '', 'chart' => false, 'showBreadcumbs' => true, 'breadcumbs' => null])
+@props(['title' => config('app.name'), 'titleSuffix' => ' | ' . config('app.name'), 'appendTitleSuffix' => false, 'paddingX' => 'px-2', 'showHeader' => true, 'metaDesc' => '', 'chart' => false, 'showBreadcumbs' => true, 'breadcumbs' => null,'showSearchButton'=>true])
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -17,7 +17,7 @@
 
 <body class="bg-slate-800 text-slate-50 font-sans flex flex-col h-screen">
     @if ($showHeader)
-        <x-layout.header />
+        <x-layout.header :showSearchButton="$showSearchButton" />
     @endif
     <x-layout.main>
         @if ($showBreadcumbs)
