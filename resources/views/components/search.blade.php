@@ -36,11 +36,12 @@
         @if ($searchTerm)
             @if (!$emptySearchResults)
                 <span>Zobacz wyniki wyszukiwania</span>
+                <x-icons.down class="h-full w-8 fill-current inline-block" />
             @endif
         @else
             <span>Zobacz wszystkie produkty</span>
+            <x-icons.down class="h-full w-8 fill-current inline-block" />
         @endif
-        <x-icons.down class="h-full w-8 fill-current inline-block" />
     </a>
 
 </section>
