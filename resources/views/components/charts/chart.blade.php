@@ -142,25 +142,25 @@ var options = {
         color:  '#fff'
         },
     },
-    annotations: {
-        xaxis: [
-            {
-            x: 1643670000000,
-            color: '#fff',
-            borderColor:'#fff',
+    // annotations: {
+    //     xaxis: [
+    //         {
+    //         x: 1643670000000,
+    //         color: '#fff',
+    //         borderColor:'#fff',
 
-            label: {
-                style: {
-                color: '#fff',
-                background:'#0f172a',
-                borderColor:'#fff'
-                },
-                text: 'Tarcza antyinflacyjna',
-                orientation:'horizontal'
-            }
-            }
-        ]
-    },
+    //         label: {
+    //             style: {
+    //             color: '#fff',
+    //             background:'#0f172a',
+    //             borderColor:'#fff'
+    //             },
+    //             text: 'Tarcza antyinflacyjna',
+    //             orientation:'horizontal'
+    //         }
+    //         }
+    //     ]
+    // },
     series: [
 
         @foreach ($products as $product)
