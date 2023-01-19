@@ -6,7 +6,7 @@
                 <th class="py-4 px-1 ">Sklep</th>
                 <th class="py-4 px-1  text-right pr-4">Cena</th>
                 <th class="py-4 px-1 ">Cena z dnia</th>
-                <th class="py-4 px-1 ">Nazwa w sklepie</th>
+                <th class="py-4 px-1 hidden lg:table-cell ">Nazwa w sklepie</th>
                 {{-- <th class="py-4 px-1 ">Zdjęcie</th> --}}
             </tr>
         </thead>
@@ -26,7 +26,7 @@
                     <td class="px-1">
                         {{ \Carbon\Carbon::parse($product->prices->last()->created_at)->format('d.m.Y') }}
                     </td>
-                    <td class="px-1">
+                    <td class="px-1  hidden lg:table-cell ">
                         {{ $product->title }}
                     </td>
                     {{-- <td class="px-1">
