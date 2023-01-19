@@ -34,7 +34,9 @@
     </form>
     <a class=" p-4 flex flex-col items-center text-slate-400 hover:text-slate-300 duration-100 hover:duration-300 space-y-2" href="#produkty">
         @if ($searchTerm)
-            <span>Zobacz wyniki wyszukiwania</span>
+            @if (!$emptySearchResults)
+                <span>Zobacz wyniki wyszukiwania</span>
+            @endif
         @else
             <span>Zobacz wszystkie produkty</span>
         @endif
