@@ -128,7 +128,7 @@ class Group extends Model
      */
     public function scopeSearch($query, $searchTerm)
     {
-        $query = Group::where('ean', 'like', '%' . $searchTerm . '%')
+        $query = $query->where('ean', 'like', '%' . $searchTerm . '%')
             ->orWhereHas('products', function (Builder $query) use ($searchTerm) {
                 $query->where('title', 'like', '%' . $searchTerm . '%');
             })
