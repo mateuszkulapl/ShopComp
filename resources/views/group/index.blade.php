@@ -21,7 +21,7 @@
             @if ($searchTerm)
                 <h2 class=" text-2xl my-4">Produkty pasujące do &quot;{{ $searchTerm }}&quot;</h2>
             @endif
-            <x-group.grid class=" mb-4" :groups="$groups" />
+            <x-group.grid class=" mb-4" :groups="$groups" :lazyImages="$groups->currentPage() == 1" />
             {{ $groups->onEachSide(1)->links() }}
         </div>
     @endif
