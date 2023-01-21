@@ -18,13 +18,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', function () {
-//     return view('index');
-// });
-
-
-
-
 Route::controller(GroupController::class)->group(function () {
     Route::get('/', 'index')->name('group.index');
     Route::get('/ean/{group:ean}/{title?}', 'show')->name('group.show')->whereNumber('ean');
@@ -36,12 +29,12 @@ Route::controller(GroupController::class)->group(function () {
 
 Route::controller(ShopController::class)->group(function () {
     Route::get('sklep/', 'index')->name('shop.index');
-    Route::get('sklep/{shop}/', 'show')->name('shop.show');
+    Route::get('sklep/{shop}/', 'show')->name('shop.show')->whereNumber('shop');
 });
 
 Route::controller(CategoryController::class)->group(function () {
-    Route::get('sklep/{shop}/kategoria/', 'index')->name('category.index');
-    Route::get('sklep/{shop}/kategoria/{category}', 'show')->name('category.show');
+    Route::get('sklep/{shop}/kategoria/', 'index')->name('category.index')->whereNumber('shop');
+    Route::get('sklep/{shop}/kategoria/{category}', 'show')->name('category.show')->whereNumber('shop', 'category');
 });
 
 
