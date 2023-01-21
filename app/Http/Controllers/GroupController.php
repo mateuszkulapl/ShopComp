@@ -11,6 +11,7 @@ class GroupController extends Controller
 {
     public function index($searchTerm = null)
     {
+        $searchExamples = collect();
         $groups = Group::with('oldestProduct', 'latestPriceWeekRange', 'oldestProduct.oldestImage');
         if ($searchTerm) {
             $groups = $groups->search($searchTerm);
@@ -19,16 +20,24 @@ class GroupController extends Controller
         } else {
             $title = null;
             $appendTitleSuffix = false;
+            $searchExamplesAll = collect();
+            $searchExamplesAll->push("Milka", "Sok pomarańczowy", "Masło", "Lay's", "Mleko", "Dżem", "Parówki", "Actimel", "Herbata", "Kawa ", "Prince Polo", "Dżem", "Makaron", "Płatki śniadaniowe", "Cukier", "Mąka ");
+            $searchExamples = $searchExamplesAll->random(3);
         }
-        $groups=$groups->withCount('products')->orderByDesc('products_count')->orderBy('id','desc');
-        return view('group.index', [
-            'groups' => $groups->paginate(30),
+        $groups = $groups->withCount('products')->orderByDesc('products_count')->orderBy('id', 'desc')->paginate(30);
+
+        if ($groups->total() == 1  & $searchTerm != null && $groups->items()[0]->ean == $searchTerm)
+            return redirect($groups->items()[0]->appUrl, 301);
+
+        $groups->total() == 0 ? $httpCode = 404 : $httpCode = 200;
+        return response()->view('group.index', [
+            'groups' => $groups,
             'searchTerm' => $searchTerm,
             'title' => $title,
             'appendTitleSuffix' => $appendTitleSuffix,
             'breadcumbs' => collect(),
-        ]);
-        
+            'searchExamples' => $searchExamples
+        ], $httpCode);
     }
 
     public function searchPost()

@@ -1,6 +1,6 @@
 <x-layout  showHeader="true" showSearchButton="{{ $groups->currentPage() != 1 }}" :title="$title" :appendTitleSuffix="$appendTitleSuffix" :breadcumbs="$breadcumbs" showBreadcumbs="0">
     @if ($groups->currentPage() == 1)
-        <x-search :searchTerm="$searchTerm" :emptySearchResults="$groups->isEmpty() && $searchTerm">
+        <x-search :searchTerm="$searchTerm" :emptySearchResults="$groups->isEmpty() && $searchTerm" :searchExamples="$searchExamples">
             <x-slot name="additionalButtons">
                 @if ($searchTerm)
                     <a class="
