@@ -46,21 +46,33 @@
                 rounded-b-md
                 border-none" id="searchResults" wire:loading.class.delay="hidden">
                     @if ($groups->isNotEmpty())
-                        <ul>
+                        <ul class=" space-y-1">
                             @foreach ($groups as $group)
                                 <li>
                                     <a class="
-                                    px-2 hover:bg-slate-500 active:bg-slate-400 duration-100 hover:duration-300 w-full block
+                                    pr-2 
+                                    w-full flex
+                                    items-center
+                                    hover:bg-slate-500 active:bg-slate-400 duration-100 hover:duration-300
                                     
                                     " href="{{ $group->app_url }}">
-                                        {{ $group->oldestProduct->title }}
+                                        <div class=" basis-2/12">
+                                            @if ($group->oldestProduct->oldestImage)
+                                                <div class="bg-white flex items-center rounded-t-md">
+                                                    <img class="max-w-full max-h-full w-auto mx-auto " src="{{ $group->oldestProduct->oldestImage->getUrl(75) }}" alt="{{ $group->oldestProduct->title }}">
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class=" basis-10/12 pl-2">
+                                            {{ $group->oldestProduct->title }}
+                                        </div>
                                     </a>
                                 </li>
                             @endforeach
                         </ul>
                         @if ($groups->hasMorePages())
                             <a class="
-                            px-2 border-t py-1 border-slate-500
+                            px-2 border-t py-2 border-slate-500 text-center
                             bg-slate-700 hover:bg-slate-500 active:bg-slate-400 duration-100 hover:duration-300
                             w-full block rounded-b-md
                             " href="{{ route('group.search', ['searchTerm' => $searchTerm]) }}#produkty">

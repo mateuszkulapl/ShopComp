@@ -26,12 +26,14 @@
                             document.getElementById('search').focus();
                             headerSearchTrigger.classList.add('hidden');
                             document.getElementById('main').style.filter="blur(5px)";
+                            document.getElementById('main').style.pointerEvents="none";
                             return;
                         }
                         if (!headerSearch.contains(event.target)) {
                             headerSearch.classList.add('hidden');
                             headerSearchTrigger.classList.remove('hidden');
-                            document.getElementById('main').style.filter="";
+                            document.getElementById('main').style.filter="";                            
+                            document.getElementById('main').style.pointerEvents="initial";
                         }
                     }
                     document.addEventListener('click', clickHeaderSearch, false);
