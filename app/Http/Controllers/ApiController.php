@@ -9,6 +9,7 @@ use App\Models\Price;
 use App\Models\Product;
 use App\Models\Shop;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -19,6 +20,17 @@ class ApiController extends Controller
 
     public function storeMultiply(Request $request)
     {
+        $tokenValidationResponse = $this->isApiTokenValid($request);
+        if ($tokenValidationResponse !== true) {
+            return response()->json(
+                [
+                    'status_code' => 401,
+                    'description' => $tokenValidationResponse,
+                ],
+                401
+            );
+        }
+
         $responses = collect();
         if (!is_array($request->input('product'))) {
             return response()->json(
@@ -32,12 +44,14 @@ class ApiController extends Controller
         foreach ($request->input('product') as $key => $requestProduct) {
 
             $r = null;
+
             try {
                 $r = $this->storeOne($requestProduct);
             } catch (Throwable $e) {
                 $r = [
                     'status_code' => 500,
-                    'description' => $e->getMessage()
+                    //'description' => $e->getMessage()
+                    'description' => 'Internal Server Error'
                 ];
             }
 
@@ -58,6 +72,17 @@ class ApiController extends Controller
      */
     public function store(Request $request)
     {
+        $tokenValidationResponse = $this->isApiTokenValid($request);
+        if ($tokenValidationResponse !== true) {
+            return response()->json(
+                [
+                    'status_code' => 401,
+                    'description' => $tokenValidationResponse,
+                ],
+                401
+            );
+        }
+
         $resp = $this->storeOne($request->input());
         return response()->json(
             $resp,
@@ -72,79 +97,89 @@ class ApiController extends Controller
     public function storeOne($p)
     {
         /*note: ISO-8601 dates - UTC */
+        $response = DB::transaction(function () use ($p) {
+            //$creation_date = Carbon::parse($p['creation_date'])->toDateTimeString();
+            $creation_date = Carbon::now()->toDateTimeString();
+            $validator = Validator::make($p, [
+                'shop_name' => 'required|exists:App\Models\Shop,name',
+                'ean' => 'required|string',
+                'title' => 'required|string',
+                'price_current' => 'required|numeric|max:999999.99|min:0.01',
+                'price_old' => 'required|numeric|gt:price_current|max:999999.99|min:0.01',
+                'url' => 'url',
+                'images' => 'sometimes|array|distinct',
+                'images.*' => 'sometimes|distinct',
+                'categories' => 'sometimes|array',
+                'categories.*.id' => 'required',
+                'categories.*.name' => 'required',
+                'categories.*.url' => 'nullable|url',
+            ]);
+            if ($validator->fails()) {
+                return
+                    [
+                        'status_code' => 422, //Unprocessable Entity
+                        'description' => 'Wrong input data.',
+                        'errors' => $validator->errors()
+                    ];
+            }
 
-        /*
-        TODO:
-        validate input
-        */
 
-        // $request->validate([
-        //     'shop_name' => 'required',
-        //     'ean' => 'required',
-        // ]);
-        //$creation_date = Carbon::parse($p['creation_date'])->toDateTimeString();
-        $creation_date = Carbon::now()->toDateTimeString();
-        try {
-            $shop = Shop::where('name', $p['shop_name'])->firstOrFail();
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            $shop = Shop::where('name', $p['shop_name'])->first();
+
+
+            $group = Group::firstOrCreate(
+                ['ean' => $p['ean']]
+            );
+            if ($group->wasRecentlyCreated) {
+                $group->created_at = $creation_date;
+                $group->updated_at = $creation_date;
+                $group->save(['timestamps' => false]);
+            }
+            $group->created_now = $group->wasRecentlyCreated;
+
+            $product = Product::updateOrCreate(
+                ['shop_id' => $shop->id, 'group_id' => $group->id],
+                ['title' => $p['title'], 'url' => $p['url']]
+            );
+            if ($product->wasRecentlyCreated) {
+                $product->created_at = $creation_date;
+            }
+
+            $product->updated_at = $creation_date;
+            $product->save(['timestamps' => false]);
+            $product->created_now = $product->wasRecentlyCreated;
+
+
+            $price = $this->processPostedPrice($p['price_current'], $p['price_old'], $product, $creation_date);
+            if (isset($p['images'])) {
+                $postedImages = $this->processPostedImages($p['images'], $product->id, $creation_date);
+            } else {
+                $postedImages = [];
+            }
+
+            $categories = [];
+
+            if (isset($p['categories'])) {
+                $categories = $this->processPostedCategories($p['categories'], $shop->id, $creation_date);
+                $categories_dates = array_fill(0, $categories->count(), ['updated_at' => $creation_date, 'created_at' => $creation_date]);
+                $product->categories()->sync($categories->pluck('id'), $categories_dates);
+            }
+
+            $product->group = $group;
+            $product->shop = $shop;
+            $product->price = $price;
+            $product->images = $postedImages;
+            $product->categories = $categories;
+
+            $product->group->append('app_url');
             return
                 [
-                    'status_code' => 404,
-                    'description' => 'Shop not found'
+                    'status_code' => 200,
+                    'description' => 'OK',
+                    'product' => $product
                 ];
-        }
-
-        $group = Group::firstOrCreate(
-            ['ean' => $p['ean']]
-        );
-        if ($group->wasRecentlyCreated) {
-            $group->created_at = $creation_date;
-            $group->updated_at = $creation_date;
-            $group->save(['timestamps' => false]);
-        }
-        $group->created_now = $group->wasRecentlyCreated;
-
-        $product = Product::updateOrCreate(
-            ['shop_id' => $shop->id, 'group_id' => $group->id],
-            ['title' => $p['title'], 'url' => $p['url']]
-        );
-        if ($product->wasRecentlyCreated) {
-            $product->created_at = $creation_date;
-        }
-        $product->updated_at = $creation_date;
-        $product->save(['timestamps' => false]);
-        $product->created_now = $product->wasRecentlyCreated;
-
-
-        $price = $this->processPostedPrice($p['price_current'], $p['price_old'], $product, $creation_date);
-        if (isset($p['images'])) {
-            $postedImages = $this->processPostedImages($p['images'], $product->id, $creation_date);
-        } else {
-            $postedImages = null;
-        }
-
-        $categories = [];
-
-        if (isset($p['categories'])) {
-            $categories = $this->processPostedCategories($p['categories'], $shop->id, $creation_date);
-            $categories_dates = array_fill(0, $categories->count(), ['updated_at' => $creation_date, 'created_at' => $creation_date]);
-            $product->categories()->sync($categories->pluck('id'), $categories_dates);
-        }
-
-        $product->group = $group;
-        $product->shop = $shop;
-        $product->price = $price;
-        $product->images = $postedImages;
-        $product->categories = $categories;
-
-        $product->group->append('app_url');
-
-        return
-            [
-                'status_code' => 200,
-                'description' => 'OK',
-                'product' => $product
-            ];
+        });
+        return $response;
     }
 
 
@@ -274,5 +309,22 @@ class ApiController extends Controller
         $category->created_now = $category->wasRecentlyCreated;
         $category->load('ancestor');
         return $category;
+    }
+
+
+    private function isApiTokenValid(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            '_token' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return 'Token is missing.';
+        }
+        $apiToken = env('API_TOKEN', null);
+        if ($apiToken != null && $request->input('_token') == $apiToken)
+            return true;
+
+        return "Ivalid token.";
     }
 }
