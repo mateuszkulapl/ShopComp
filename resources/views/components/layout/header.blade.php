@@ -25,11 +25,13 @@
                             headerSearch.classList.remove('hidden');
                             document.getElementById('search').focus();
                             headerSearchTrigger.classList.add('hidden');
+                            document.getElementById('main').style.filter="blur(5px)";
                             return;
                         }
                         if (!headerSearch.contains(event.target)) {
                             headerSearch.classList.add('hidden');
                             headerSearchTrigger.classList.remove('hidden');
+                            document.getElementById('main').style.filter="";
                         }
                     }
                     document.addEventListener('click', clickHeaderSearch, false);
