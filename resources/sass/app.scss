@@ -1,3 +1,14 @@
 html {
     scroll-behavior: smooth;
 }
+
+
+.apexcharts-title-text {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .apexcharts-title-text {
+        display: block;
+    }
+}

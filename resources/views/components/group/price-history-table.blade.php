@@ -39,7 +39,7 @@
                                 <s class=" text-xs">{{ $old }}</s>
                             @endif
                             @if ($change != 0)
-                                <small class=" text-xs">{{ $change > 0 ? '+' . $change : '' . $change }}</small>
+                                <small class=" text-xs">{{ $change > 0 ? '+' . number_format($change, 2, ",", "") : '' . number_format($change, 2, ",", "") }}</small>
                             @endif
 
                         </td>

@@ -17,7 +17,7 @@
                         <x-icons.circle :color="$product->color" />
                         {{ $product->shop->name }}
                     </td>
-                    <td class="px-1 text-right pr-4">
+                    <td class="px-1 text-right pr-4 whitespace-nowrap" >
                         {{ $product->prices->last()->currentFormatted() }}
                         @if($product->prices->last()->old)
                             <s>{{$product->prices->last()->oldFormatted()}}</s>

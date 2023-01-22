@@ -16,7 +16,7 @@
             <div class="block space-x-1">
                 <span class=" text-gray-300">Kategorie: </span>
                 @foreach ($product->categories as $category)
-                    <a class=" duration-100 hover:duration-300 bg-slate-600 hover:bg-slate-500 px-1 py-0 mt-1" href="{{ $category->appUrl }}">{{ $category->name }}</a>
+                    <a class=" duration-100 hover:duration-300 bg-slate-600 hover:bg-slate-500 px-1 py-0 mt-1 whitespace-nowrap" href="{{ $category->appUrl }}">{{ $category->name }}</a>
                 @endforeach
             </div>
         @endif
