@@ -13,6 +13,7 @@
         <script src="{{ asset('js/apexcharts/apexcharts.js') }}"></script>
     @endif
     <meta name="description" content="{{ $metaDesc }}">
+    @livewireStyles
 </head>
 
 <body class="bg-slate-800 text-slate-50 font-sans flex flex-col h-screen">
@@ -28,6 +29,7 @@
     <x-layout.footer class="">
         <p>&copy; {{ config('app.name') }}</p>
     </x-layout.footer>
+    @livewireScripts
 </body>
 
 </html>
