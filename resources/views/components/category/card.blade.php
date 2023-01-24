@@ -5,7 +5,7 @@
     </a>
     <div class="mt-auto">
         <p>Liczba produktów: {{ number_format($category->products_count, 0, null, ' ') }}</p>
-        <p>Liczba podkategorii: {{ number_format($category->children->count(), 0, null, ' ') }}</p>
+        <p>Liczba podkategorii: {{ number_format($category->children_count, 0, null, ' ') }}</p>
     </div>
 
 </div>

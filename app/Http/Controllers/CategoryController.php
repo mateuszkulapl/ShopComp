@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function index(Shop $shop)
     {
-        $categories = $shop->categories()->where('parent_id', null)->with('children')->withCount('products')->orderBy('name', 'asc')->get();
+        $categories = $shop->categories()->where('parent_id', null)->with('children')->withCount('children', 'products')->orderBy('name', 'asc')->get();
         foreach ($categories as $cat) {
             $cat->shop = $shop; //prevent additional query
         }
@@ -41,13 +41,13 @@ class CategoryController extends Controller
         if ($category->shop != $shop)
             throw new \Illuminate\Database\Eloquent\ModelNotFoundException;
 
-        $category->load('ancestor', 'products', 'products.group', 'products.group.oldestProduct', 'products.latestPrice', 'products.oldestImage');
-        $categories = $category->children()->with('children')->withCount('products')->orderBy('name', 'asc')->get();
+        $category->load('ancestor');
+        $categories = $category->children()->withCount('children', 'products')->orderBy('name', 'asc')->get();
         foreach ($categories as $cat) {
             $cat->shop = $shop; //prevent additional query
         }
 
-        $products = $category->products()->latest()->paginate(30)->fragment('produkty');
+        $products = $category->products()->with('group', 'group.oldestProduct', 'latestPrice', 'oldestImage')->latest()->paginate(30)->fragment('produkty');
 
         $breadcumbs = $this->getCategoryBreadcumbs($shop, $category);
 
