@@ -12,12 +12,8 @@
 
         <h2 class="text-xl font-bold mb-2">Szczegóły produktów</h2>
         <x-product.products-details :products="$products" />
-    @endif
-
-
-    @if ($products->isEmpty())
+    @else
         <p class="text-lg">Nie dodano jeszcze produktów. Wróć później</p>
     @endif
-
 
 </x-layout>
