@@ -12,6 +12,16 @@
     @if ($chart)
         <script src="{{ asset('js/apexcharts/apexcharts.js') }}"></script>
     @endif
+    @if($this->app->isProduction() && env('GTM_ID', false))
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{env('GTM_ID')}}"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', {{env('GTM_ID')}});
+        </script>
+    @endif
     <meta name="description" content="{{ $metaDesc }}">
     @livewireStyles
 </head>
