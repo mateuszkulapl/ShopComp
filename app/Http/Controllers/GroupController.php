@@ -57,7 +57,7 @@ class GroupController extends Controller
 
     public function getShowView(Group $group)
     {
-        $products = $group->products()->with('shop', 'prices', 'images', 'categories')->get();
+        $products = $group->products()->with('shop', 'prices', 'images', 'categories','categories.shop')->get();
         $products = $products->keyBy('id');
         $priceTable = collect();
         foreach ($products as $product) {

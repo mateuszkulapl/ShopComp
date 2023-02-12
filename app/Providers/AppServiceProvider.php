@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Model;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         Paginator::defaultView('pagination-tailwind');
+        Model::preventLazyLoading();
+
         if (env('LOG_QUERIES', false)) {
             DB::listen(function ($query) {
                 File::append(
