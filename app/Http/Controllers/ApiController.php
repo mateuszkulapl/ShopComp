@@ -105,7 +105,7 @@ class ApiController extends Controller
                 'ean' => 'required|string',
                 'title' => 'required|string',
                 'price_current' => 'required|numeric|max:999999.99|min:0.01',
-                'price_old' => 'required|numeric|gt:price_current|max:999999.99|min:0.01',
+                'price_old' => 'numeric|gt:price_current|max:999999.99|min:0.01',
                 'url' => 'url',
                 'images' => 'sometimes|array|distinct',
                 'images.*' => 'sometimes|distinct',
@@ -137,9 +137,11 @@ class ApiController extends Controller
             }
             $group->created_now = $group->wasRecentlyCreated;
 
+
+            $url = isset($p['url']) ? $p['url'] : null;
             $product = Product::updateOrCreate(
                 ['shop_id' => $shop->id, 'group_id' => $group->id],
-                ['title' => $p['title'], 'url' => $p['url']]
+                ['title' => $p['title'], 'url' => $url]
             );
             if ($product->wasRecentlyCreated) {
                 $product->created_at = $creation_date;
@@ -150,7 +152,8 @@ class ApiController extends Controller
             $product->created_now = $product->wasRecentlyCreated;
 
 
-            $price = $this->processPostedPrice($p['price_current'], $p['price_old'], $product, $creation_date);
+            $priceOld = isset($p['price_old']) ? $p['price_old'] : null;
+            $price = $this->processPostedPrice($p['price_current'], $priceOld, $product, $creation_date);
             if (isset($p['images'])) {
                 $postedImages = $this->processPostedImages($p['images'], $product->id, $creation_date);
             } else {
@@ -314,15 +317,12 @@ class ApiController extends Controller
 
     private function isApiTokenValid(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            '_token' => 'required'
-        ]);
-
-        if ($validator->fails()) {
+        $token = $request->header('Authorization');
+        if ($token == null) {
             return 'Token is missing.';
         }
         $apiToken = env('API_TOKEN', null);
-        if ($apiToken != null && $request->input('_token') == $apiToken)
+        if ($apiToken != null && $token == $apiToken)
             return true;
 
         return "Ivalid token.";
