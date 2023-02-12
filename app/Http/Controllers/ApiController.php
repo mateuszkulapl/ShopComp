@@ -50,8 +50,8 @@ class ApiController extends Controller
             } catch (Throwable $e) {
                 $r = [
                     'status_code' => 500,
-                    //'description' => $e->getMessage()
-                    'description' => 'Internal Server Error'
+                    //'description' => 'Internal Server Error'
+                    'description' => $e->getMessage() //TODO: remove
                 ];
             }
 
@@ -105,7 +105,7 @@ class ApiController extends Controller
                 'ean' => 'required|string',
                 'title' => 'required|string',
                 'price_current' => 'required|numeric|max:999999.99|min:0.01',
-                'price_old' => 'numeric|gte:price_current|max:999999.99|min:0.01',
+                'price_old' => 'nullable|numeric|gte:price_current|max:999999.99|min:0.01',
                 'url' => 'url',
                 'images' => 'sometimes|array|distinct',
                 'images.*' => 'sometimes|distinct',
