@@ -12,7 +12,7 @@
     @if ($chart)
         <script src="{{ asset('js/apexcharts/apexcharts.js') }}"></script>
     @endif
-    @if($this->app->isProduction() && env('GTM_ID', false))
+    @if(app()->isProduction() && env('GTM_ID', false))
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id={{env('GTM_ID')}}"></script>
         <script>
