@@ -37,17 +37,22 @@ For more information on configuring and deploying the application, refer to the 
 
 ## Screenshots
 
-** Home page above the fold **
+**Home page above the fold**
+
 ![Screenshot of the homepage](/readme_screenshots/homepage-atf.png?raw=true "Homepage above the fold")
 
-** Home page below the fold **
+**Home page below the fold**
+
 ![Screenshot of the homepage](/readme_screenshots/homepage-btf.png?raw=true "Homepage below the fold")
 
-** Product page **
+**Product page**
+
 ![Screenshot of the homepage](/readme_screenshots/product-page.png?raw=true "Product page")
 
-** Product search **
+**Product search**
+
 ![Product searching](/readme_screenshots/search.gif?raw=true "Product search")
 
-** Product category with breadcumbs category path **
+**Product category with breadcumbs category path**
+
 ![Product category](/readme_screenshots/shop-category.png?raw=true "Product category")
