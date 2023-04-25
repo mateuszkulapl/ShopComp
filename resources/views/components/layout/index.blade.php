@@ -19,7 +19,7 @@
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', {{env('GTM_ID')}});
+        gtag('config', '{{env('GTM_ID')}}');
         </script>
     @endif
     <meta name="description" content="{{ $metaDesc }}">
