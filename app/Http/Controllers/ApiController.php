@@ -17,7 +17,6 @@ use Throwable;
 class ApiController extends Controller
 {
 
-
     public function storeMultiply(Request $request)
     {
         $tokenValidationResponse = $this->isApiTokenValid($request);
@@ -317,6 +316,7 @@ class ApiController extends Controller
 
     private function isApiTokenValid(Request $request)
     {
+        //TODO: move to middleware
         $token = $request->header('Authorization');
         if ($token == null) {
             return 'Token is missing.';

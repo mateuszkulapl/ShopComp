@@ -72,6 +72,7 @@ class Image extends Model
             return preg_replace($re, "$1" . $size, $this->url);
         }
 
+        //TODO: 
         // if (Str::startsWith($this->url, 'https://res.cloudinary.com/dj484tw6k/')) {
         //     $re = '/(https:\/\/res\.cloudinary\.com\/dj484tw6k\/)[a-z0-9_,]+\/(.*)/';
         //     return preg_replace($re, "$1" ."f_auto,q_auto,fl_progressive,c_pad,b_white," ."w_". $preferredSize .",". "h_". $preferredSize ."/$2", $this->url);

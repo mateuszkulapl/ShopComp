@@ -21,6 +21,7 @@ class GroupController extends Controller
             $title = null;
             $appendTitleSuffix = false;
             $searchExamplesAll = collect();
+            //TODO: move to admin panel
             $searchExamplesAll->push("Milka", "Sok pomarańczowy", "Masło", "Lay's", "Mleko", "Dżem", "Parówki", "Actimel", "Herbata", "Kawa ", "Prince Polo", "Dżem", "Makaron", "Płatki śniadaniowe", "Cukier", "Mąka ");
             $searchExamples = $searchExamplesAll->random(3);
         }
@@ -92,14 +93,14 @@ class GroupController extends Controller
             return $item->keyBy('product_id');
         });
 
-        $apexchartPalette = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'];
+        $apexchartPalette = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'];//TODO: fix colors for more than 5 shops
 
 
         $priceTableGroupedByProduct = $priceTable->groupBy('product_id');
         $priceTableGroupedByProduct = $priceTableGroupedByProduct->map(function ($item) {
             return $item->keyBy('startOfDay');
         });
-        //dd($priceTableGroupedByProduct);
+
         foreach ($priceTableGroupedByProduct as $product_id => $priceTableProduct) {
             $chartPrices = null;
             $chartPrices = $priceTableProduct->map(function ($price, $key) {
@@ -110,17 +111,13 @@ class GroupController extends Controller
                 return [$key, null];
             });
 
-
-
-            //$chartPrices=$chartPrices->union($diffDates)->sortKeys();
             $products[$product_id]->setChartPrices($chartPrices->values());
         }
 
-
-
         $index = 0;
+        $apexchartPaletteSize=count($apexchartPalette);
         foreach ($products as $product_id => $product) {
-            $product->color = $apexchartPalette[($index++) % count($apexchartPalette)] . "";
+            $product->color = $apexchartPalette[($index++) % $apexchartPaletteSize] . "";
         }
 
         $breadcumbs = collect();
