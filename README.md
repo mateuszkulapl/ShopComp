@@ -14,6 +14,7 @@ A web application to track and compare prices in online shops, built using the P
 *   Laravel Framework
 *   Tailwind CSS
 *   ApexCharts.js
+*   Livewire
 
 
 ## Getting Started
