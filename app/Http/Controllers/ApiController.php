@@ -11,6 +11,7 @@ use App\Models\Shop;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -174,6 +175,9 @@ class ApiController extends Controller
             $product->categories = $categories;
 
             $product->group->append('app_url');
+            if ($group->wasRecentlyCreated) {
+                Cache::forget('homepageGroups_page-1');
+            }
             return
                 [
                     'status_code' => 200,
