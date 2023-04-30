@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use App\Models\Group;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class GroupController extends Controller
 {
@@ -25,9 +26,14 @@ class GroupController extends Controller
             $searchExamplesAll->push("Milka", "Sok pomarańczowy", "Masło", "Lay's", "Mleko", "Dżem", "Parówki", "Actimel", "Herbata", "Kawa ", "Prince Polo", "Dżem", "Makaron", "Płatki śniadaniowe", "Cukier", "Mąka ");
             $searchExamples = $searchExamplesAll->random(3);
         }
-        $groups = $groups->withCount('products')->orderByDesc('products_count')->orderBy('id', 'desc')->paginate(30);
+        $currentPage = request()->get('page', 1);
+        //cache only first page of homepage without search term
+        $groups = Cache::remember('homepageGroups_page-' . $currentPage, ($currentPage == 1 && $searchTerm == null) ? now()->addMinutes(10) : 0, function () use ($groups) {
+            return $groups->withCount('products')->orderByDesc('products_count')->orderBy('id', 'desc')->paginate(30);
+        });
 
-        if ($groups->total() == 1  & $searchTerm != null && $groups->items()[0]->ean == $searchTerm)
+
+        if ($searchTerm != null && $groups->total() == 1 && $groups->items()[0]->ean == $searchTerm)
             return redirect($groups->items()[0]->appUrl, 301);
 
         $groups->total() == 0 ? $httpCode = 404 : $httpCode = 200;
@@ -58,7 +64,7 @@ class GroupController extends Controller
 
     public function getShowView(Group $group)
     {
-        $products = $group->products()->with('shop', 'prices', 'images', 'categories','categories.shop')->get();
+        $products = $group->products()->with('shop', 'prices', 'images', 'categories', 'categories.shop')->get();
         $products = $products->keyBy('id');
         $priceTable = collect();
         foreach ($products as $product) {
@@ -93,7 +99,7 @@ class GroupController extends Controller
             return $item->keyBy('product_id');
         });
 
-        $apexchartPalette = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'];//TODO: fix colors for more than 5 shops
+        $apexchartPalette = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0']; //TODO: fix colors for more than 5 shops
 
 
         $priceTableGroupedByProduct = $priceTable->groupBy('product_id');
@@ -115,7 +121,7 @@ class GroupController extends Controller
         }
 
         $index = 0;
-        $apexchartPaletteSize=count($apexchartPalette);
+        $apexchartPaletteSize = count($apexchartPalette);
         foreach ($products as $product_id => $product) {
             $product->color = $apexchartPalette[($index++) % $apexchartPaletteSize] . "";
         }
