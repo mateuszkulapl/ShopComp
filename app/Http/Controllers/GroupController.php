@@ -28,9 +28,12 @@ class GroupController extends Controller
         }
         $currentPage = request()->get('page', 1);
         //cache only first page of homepage without search term
+        if($currentPage == 1 && $searchTerm == null)
         $groups = Cache::remember('homepageGroups_page-' . $currentPage, ($currentPage == 1 && $searchTerm == null) ? now()->addMinutes(10) : 0, function () use ($groups) {
             return $groups->withCount('products')->orderByDesc('products_count')->orderBy('id', 'desc')->paginate(30);
         });
+        else
+        $groups = $groups->withCount('products')->orderByDesc('products_count')->orderBy('id', 'desc')->paginate(30);
 
 
         if ($searchTerm != null && $groups->total() == 1 && $groups->items()[0]->ean == $searchTerm)
