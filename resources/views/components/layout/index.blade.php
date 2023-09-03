@@ -1,4 +1,4 @@
-@props(['title' => config('app.name'), 'titleSuffix' => ' | ' . config('app.name'), 'appendTitleSuffix' => false, 'paddingX' => 'px-2', 'showHeader' => true, 'metaDesc' => '', 'chart' => false, 'showBreadcumbs' => true, 'breadcumbs' => null,'showSearchButton'=>true])
+@props(['title' => config('app.name'), 'titleSuffix' => ' | ' . config('app.name'), 'appendTitleSuffix' => false, 'paddingX' => 'px-2', 'showHeader' => true, 'metaDesc' => '', 'chart' => false, 'showBreadcumbs' => true, 'breadcumbs' => null, 'showSearchButton' => true])
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -8,19 +8,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title }}{{ $appendTitleSuffix ? $titleSuffix : '' }}</title>
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <script src="{{ asset('js/app.js') }}" defer></script>
+
     @if ($chart)
         <script src="{{ asset('js/apexcharts/apexcharts.js') }}"></script>
     @endif
-    @if(app()->isProduction() && env('GTM_ID', false))
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{env('GTM_ID')}}"></script>
-        <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '{{env('GTM_ID')}}');
-        </script>
+    @if (app()->isProduction())
+        @if (env('GTM_ID', false))
+            <!-- Google tag (gtag.js) -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id={{ env('GTM_ID') }}"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '{{env('GTM_ID')}}');
+            </script>
+        @endif
+        @if (env('UMAMI_ID', false))
+            <script async src="https://analytics.umami.is/script.js" data-website-id="{{ env('UMAMI_ID') }}"></script>
+        @endif
     @endif
     <meta name="description" content="{{ $metaDesc }}">
     @livewireStyles
@@ -39,6 +44,7 @@
     <x-layout.footer class="">
         <p>&copy; {{ config('app.name') }}</p>
     </x-layout.footer>
+    <script src="{{ asset('js/app.js') }}" defer></script>
     @livewireScripts
 </body>
 
