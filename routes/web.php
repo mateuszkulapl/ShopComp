@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MigrationController;
@@ -37,7 +38,8 @@ Route::controller(CategoryController::class)->group(function () {
     Route::get('sklep/{shop}/kategoria/{category}', 'show')->name('category.show')->whereNumber('shop', 'category');
 });
 
-
-
-// Route::get('transfer',[MigrationController::class, 'index']);
-// Route::get('transfer-multiply',[MigrationController::class, 'indexMultiply']);
+Route::controller(CartController::class)->group(function () {
+    Route::get('koszyk/{eans?}', 'index')
+        ->where('eans', '([0-9]+,?)+')
+        ->name('cart.index');
+});
