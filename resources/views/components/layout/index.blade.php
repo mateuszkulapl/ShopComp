@@ -7,10 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title }}{{ $appendTitleSuffix ? $titleSuffix : '' }}</title>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
 
     @if ($chart)
-        <script src="{{ asset('js/apexcharts/apexcharts.js') }}"></script>
+        <script src="{{ mix('js/apexcharts/apexcharts.js') }}"></script>
     @endif
     @if (app()->isProduction())
         @if (env('GTM_ID', false))
@@ -44,7 +44,7 @@
     <x-layout.footer class="">
         <p>&copy; {{ config('app.name') }}</p>
     </x-layout.footer>
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ mix('js/app.js') }}" defer></script>
     @livewireScripts
 </body>
 

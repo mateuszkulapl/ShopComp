@@ -11,7 +11,7 @@ const mix = require('laravel-mix');
  |
  */
 
- mix.js('resources/js/app.js', 'public/js')
+ mix.js('resources/js/app.js', 'public/js').version();
 
 // //apex charts
  mix.copy('node_modules/apexcharts/dist/apexcharts.min.js', 'public/js/apexcharts/apexcharts.js')
@@ -19,4 +19,4 @@ const mix = require('laravel-mix');
      .postCss('resources/css/app.css', 'public/css', [
          require('tailwindcss'),
      ])
-     .sass('resources/sass/app.scss', 'public/css');
+     .sass('resources/sass/app.scss', 'public/css').version();
