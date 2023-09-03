@@ -35,8 +35,7 @@ if(compareRemoveElements)
             var element = document.getElementById('group-' + ean);
             element.parentNode.removeChild(element);
             var newUrl = window.location.protocol + "//" + window.location.host + '/koszyk/' + compare.join(',')
-            history.pushState({}, null, newUrl);
-            location.reload();//need to reload page to update sum of prices
+            location.href=newUrl;
         });
     }
 }
