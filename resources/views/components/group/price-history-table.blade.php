@@ -1,7 +1,7 @@
 @props(['products', 'priceTable'])
 <div class="overflow-x-auto relative max-h-96 mb-8" id="productPriceHistory">
     <table class=" w-full border-collapse border-spacing-0 shadow-md text-right table-auto">
-        <thead class=" bg-slate-900 sticky top-0">
+        <thead class=" bg-slate-900 sticky -top-px">
             <tr class="border-b border-slate-400">
                 <th class="py-4 border border-slate-600 px-2">Data</th>
                 @foreach ($products as $product)
