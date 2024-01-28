@@ -17,7 +17,7 @@ class CartController extends Controller
 
         $groups->load('products', 'products.shop', 'oldestProduct.oldestImage', 'products.latestPrice');
 
-        $shops = $groups->pluck('products')->flatten()->pluck('shop')->unique();
+        $shops = $groups->pluck('products')->flatten()->pluck('shop')->unique()->sort();
 
         $breadcumbs = $this->getBreadcumbs();
 

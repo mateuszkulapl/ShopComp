@@ -30,12 +30,12 @@ Route::controller(GroupController::class)->group(function () {
 
 Route::controller(ShopController::class)->group(function () {
     Route::get('sklep/', 'index')->name('shop.index');
-    Route::get('sklep/{shop}/', 'show')->name('shop.show')->whereNumber('shop');
+    Route::get('sklep/{shop:slug}/', 'show')->name('shop.show');
 });
 
 Route::controller(CategoryController::class)->group(function () {
-    Route::get('sklep/{shop}/kategoria/', 'index')->name('category.index')->whereNumber('shop');
-    Route::get('sklep/{shop}/kategoria/{category}', 'show')->name('category.show')->whereNumber('shop', 'category');
+    Route::get('sklep/{shop:slug}/kategoria/', 'index')->name('category.index');
+    Route::get('sklep/{shop:slug}/kategoria/{category}', 'show')->name('category.show')->whereNumber('category');
 });
 
 Route::controller(CartController::class)->group(function () {

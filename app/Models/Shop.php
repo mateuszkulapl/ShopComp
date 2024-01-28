@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 //use Illuminate\Database\Eloquent\SoftDeletes;
-
+use \Illuminate\Support\Str;
 class Shop extends Model
 {
     use HasFactory;
@@ -74,7 +74,7 @@ class Shop extends Model
      */
     public function getAppUrlAttribute()
     {
-        return route('shop.show', ['shop' => $this->id]);
+        return route('shop.show', ['shop' => $this]);
     }
 
     /**
@@ -85,5 +85,17 @@ class Shop extends Model
     public function getBreadcumbTitleAttribute()
     {
         return ucfirst($this->name);
+    }
+
+    public function makeSlug(): string
+    {
+        $slug=Str::slug(
+            Str::replace('.', '-', $this->name),
+            '-',
+            'pl'
+        );
+        return Str::of($slug)->whenEndsWith('-pl', function (\Illuminate\Support\Stringable $stringable) {
+            return $stringable->replaceLast('-pl', '');
+        });
     }
 }
