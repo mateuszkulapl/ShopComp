@@ -7,10 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title }}{{ $appendTitleSuffix ? $titleSuffix : '' }}</title>
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+{{--    <link href="{{ mix('css/app.css') }}" rel="stylesheet">--}}
+    @vite('resources/css/app.css')
 
     @if ($chart)
-        <script src="{{ mix('js/apexcharts/apexcharts.js') }}"></script>
+{{--        TODO: vite asset--}}
+        <script src="/js/apexcharts/apexcharts.js"></script>
     @endif
     @if (app()->isProduction())
         @if (env('GTM_ID', false))
@@ -31,7 +33,7 @@
     @livewireStyles
 </head>
 
-<body class="bg-slate-800 text-slate-50 font-sans flex flex-col h-screen">
+<body class="bg-slate-800 text-slate-50 font-sans flex flex-col h-screennpx @tailwindcss/upgrade">
     @if ($showHeader)
         <x-layout.header :showSearchButton="$showSearchButton" />
     @endif
@@ -44,7 +46,7 @@
     <x-layout.footer class="">
         <p>&copy; {{ config('app.name') }}</p>
     </x-layout.footer>
-    <script src="{{ mix('js/app.js') }}" defer></script>
+    @vite('resources/js/app.js')
     @livewireScripts
 </body>
 
