@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -82,11 +83,16 @@ class Group extends Model
 
     /*
     * Get the latest price of each product in the group, price can not be older then 7 days
+     * //TODO: fix this
     */
     public function latestPriceWeekRange()
     {
         // return $users = DB::table('prices')->groupBy('prices.product_id')->whereDate('prices.created_at', '>',  Carbon::now()->subDays(7))->get();
-        return $this->priceWeekRange()->latest('prices.created_at')->groupBy('product_id');
+        return $this->prices()->whereDate('prices.created_at', '>', Carbon::now()->subDays(7))
+            ->select('prices.*')
+            ->join(DB::raw('(SELECT product_id, MAX(created_at) as latest_date FROM prices WHERE created_at > NOW() - INTERVAL 7 DAY GROUP BY product_id) as latest_prices'), function ($join) {
+                $join->on('prices.product_id', '=', 'latest_prices.product_id');
+            });
     }
 
     public function displayLatestPriceWeekRange()
@@ -124,7 +130,7 @@ class Group extends Model
 
 
     /**
-     * Search by group ean, group products title, group products shop name 
+     * Search by group ean, group products title, group products shop name
      */
     public function scopeSearch($query, $searchTerm)
     {
