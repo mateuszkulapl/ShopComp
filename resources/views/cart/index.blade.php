@@ -24,7 +24,9 @@
                 <div class="grid grid-cols-12 bg-slate-700 hover:bg-slate-800" id="group-{{ $group->ean }}">
                     <div class="col-span-3 py-2  pl-1 pr-2 text-left border border-slate-600 flex flex-row gap-1 items-center justify-start">
                         <span class="cursor-pointer text-red-500 hover:text-red-700 px-1 py-2 compareremove" data-ean="{{ $group->ean }}" title="Usuń">X</span>
-                        <img class="max-h-full w-16" src="{{ $group->oldestProduct->oldestImage->getUrl(64) }}" alt="{{ $group->oldestProduct->title }}" width="64">
+                        @if ($group->oldestProduct->oldestImage?->getUrl(64))
+                            <img class="max-h-full w-16" src="{{ $group->oldestProduct->oldestImage?->getUrl(64) }}" alt="{{ $group->oldestProduct->title }}" width="64">
+                        @endif
                         <a class="" href="{{ $group->getAppUrlAttribute() }}">{{ $group->oldestProduct->title }}</a>
                     </div>
                     <div class="col-span-9 flex flex-row flex-nowrap justify-between">
