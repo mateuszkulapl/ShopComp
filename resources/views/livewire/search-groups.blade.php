@@ -4,7 +4,7 @@
         <label class="mr-4 text-md sm:text-lg" for="search">Wyszukaj</label>
         <div class="relative">
 
-            <input class="inline-block w-48 sm:w-96 text-sm sm:text-md py-1 px-2 shadow-sm bg-slate-700 hover:bg-slate-600 duration-100 hover:duration-300 border-none rounded-md outline-none ring-1 ring-slate-600 rounded-r-none mr-0 @if ($groups) rounded-b-none @endif " id="search" name="search" type="text" value="" wire:model="search" placeholder="Podaj nazwę produktu" required autocomplete="off"><button class="inline-block py-1 px-4 text-sm sm:text-md shadow-sm bg-slate-700 hover:bg-slate-600 active:bg-slate-400 duration-100 hover:duration-300 border-none rounded-md outline-none ring-1 ring-slate-600 rounded-l-none ml-0 @if ($groups) rounded-b-none @endif " type="submit">Szukaj!
+            <input class="inline-block w-48 sm:w-96 text-sm sm:text-md py-1 px-2 shadow-sm bg-slate-700 hover:bg-slate-600 duration-100 hover:duration-300 border-none rounded-md outline-none ring-1 ring-slate-600 rounded-r-none mr-0 @if ($groups) rounded-b-none @endif " id="search" name="search" type="text" value="" wire:model.live="search" placeholder="Podaj nazwę produktu" required autocomplete="off"><button class="inline-block py-1 px-4 text-sm sm:text-md shadow-sm bg-slate-700 hover:bg-slate-600 active:bg-slate-400 duration-100 hover:duration-300 border-none rounded-md outline-none ring-1 ring-slate-600 rounded-l-none ml-0 @if ($groups) rounded-b-none @endif " type="submit">Szukaj!
             </button>
             @if ($groups != null)
                 <div class="absolute z-30 block w-full text-sm sm:text-md ring-1 ring-slate-600 shadow-lg shadow-slate-900 bg-slate-600  rounded-b-md border-none" id="searchResults" wire:loading.class.delay="loading">
