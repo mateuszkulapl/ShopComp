@@ -14,13 +14,13 @@ class PriceFactory extends Factory
      */
     public function definition()
     {
-        $current = $this->faker->randomFloat(2, 0.00, 100);
-        $old = $this->faker->boolean() ? $this->faker->randomFloat(2, $current + 0.01, 100 + 0.01) : null;
+        $current = fake()->randomFloat(2, 0.00, 100);
+        $old = fake()->boolean() ? fake()->randomFloat(2, $current + 0.01, 100 + 0.01) : null;
         return [
             'product_id' => Product::factory(),
             'current' => $current,
             'old' => $old,
-            'created_at'=>$this->faker->dateTimeBetween('-20 days', now())
+            'created_at'=>fake()->dateTimeBetween('-20 days', now())
         ];
     }
 }

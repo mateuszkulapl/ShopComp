@@ -14,8 +14,8 @@ class ShopFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->unique()->company(),
-            'url' => $this->faker->unique()->url()
+            'name' => fake()->unique()->company(),
+            'url' => fake()->unique()->url()
         ];
     }
 }

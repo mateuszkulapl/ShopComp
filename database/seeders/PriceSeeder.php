@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Price;
+use App\Models\Product;
 use Illuminate\Database\Seeder;
 
 class PriceSeeder extends Seeder
@@ -14,7 +15,13 @@ class PriceSeeder extends Seeder
      */
     public function run()
     {
-        //
-        //Price::factory()->count(5)->create();
+        Product::query()
+            ->whereDoesntHave('prices')
+            ->each(function (Product $product) {
+                Price::factory()
+                    ->for($product)
+                    ->count(rand(1, 20))
+                    ->create();
+            });
     }
 }

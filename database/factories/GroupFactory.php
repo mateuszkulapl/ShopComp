@@ -14,7 +14,7 @@ class GroupFactory extends Factory
     public function definition()
     {
         return [
-            'ean' => $this->faker->ean13(),
+            'ean' => fake()->ean13(),
         ];
     }
 }
