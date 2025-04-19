@@ -11,7 +11,6 @@
     @vite('resources/css/app.css')
 
     @if ($chart)
-{{--        TODO: vite asset--}}
         <script src="/js/apexcharts/apexcharts.js"></script>
     @endif
     @if (app()->isProduction())
