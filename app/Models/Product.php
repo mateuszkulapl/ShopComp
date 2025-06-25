@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
+
 //use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
     use HasFactory;
+    use Searchable;
     //use SoftDeletes;
 
     protected  $fillable = ['shop_id', 'group_id', 'title', 'url', 'created_at', 'updated_at'];
@@ -21,6 +26,37 @@ class Product extends Model
      */
     protected $visible = ['title', 'url', 'shop', 'group', 'images', 'categories', 'created_now', 'price'];
     private $chartPrices=null;
+
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => (int)$this->id,
+            'title' => $this->title,
+            'shop' => $this->shop->name,
+            'url' => $this->url,
+            'created_at' => $this->created_at,
+            'ean' => $this->group->ean
+        ];
+    }
+    /**
+     * Modify the query used to retrieve models when making all of the models searchable.
+     */
+    protected function makeAllSearchableUsing(Builder $query):Builder
+    {
+        return $query->with([
+            'shop' => function ($query) { $query->select(['id', 'name']); },
+            'group' => function ($query) { $query->select(['id', 'ean']); },
+        ]);
+    }
+    /**
+     * Modify the collection of models being made searchable.
+     */
+    public function makeSearchableUsing(Collection $models): Collection
+    {
+        return $models->loadMissing(['shop:id,ean','group:id,ean']);
+    }
+
 
     /**
      * Get the shop that the product belongs to.
