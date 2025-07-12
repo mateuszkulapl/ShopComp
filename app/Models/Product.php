@@ -16,7 +16,7 @@ class Product extends Model
     use Searchable;
     //use SoftDeletes;
 
-    protected  $fillable = ['shop_id', 'group_id', 'title', 'url', 'created_at', 'updated_at'];
+    protected $fillable = ['shop_id', 'group_id', 'title', 'url', 'created_at', 'updated_at'];
 
 
     /**
@@ -36,25 +36,39 @@ class Product extends Model
             'shop' => $this->shop->name,
             'url' => $this->url,
             'created_at' => $this->created_at,
-            'ean' => $this->group->ean
+            'ean' => $this->group->ean,
+            'group_id' => $this->group_id,
         ];
     }
     /**
      * Modify the query used to retrieve models when making all of the models searchable.
      */
-    protected function makeAllSearchableUsing(Builder $query):Builder
+    protected function makeAllSearchableUsing(Builder $query): Builder
     {
         return $query->with([
-            'shop' => function ($query) { $query->select(['id', 'name']); },
-            'group' => function ($query) { $query->select(['id', 'ean']); },
+            'shop' => function ($query) {
+                $query->select(['id', 'name']);
+            },
+            'group' => function ($query) {
+                $query->select(['id', 'ean']);
+            },
         ]);
     }
+
     /**
      * Modify the collection of models being made searchable.
      */
     public function makeSearchableUsing(Collection $models): Collection
     {
-        return $models->loadMissing(['shop:id,ean','group:id,ean']);
+        return $models->loadMissing(['shop:id,name', 'group:id,ean']);
+    }
+
+    /**
+     * Determine if the model should be searchable.
+     */
+    public function shouldBeSearchable(): bool
+    {
+        return true;
     }
 
 

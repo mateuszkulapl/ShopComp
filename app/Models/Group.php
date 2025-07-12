@@ -5,15 +5,15 @@ namespace App\Models;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-//use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder search {@see Group::scopeSearch}
+ */
 class Group extends Model
 {
     use HasFactory;
-    //use SoftDeletes;
 
     protected $fillable = ['ean', 'created_at', 'updated_at'];
     /**
@@ -130,17 +130,15 @@ class Group extends Model
 
 
     /**
-     * Search by group ean, group products title, group products shop name
+     * Search with scout
      */
     public function scopeSearch($query, $searchTerm)
     {
-        $query = $query->where('ean', 'like', '%' . $searchTerm . '%')
-            ->orWhereHas('products', function (Builder $query) use ($searchTerm) {
-                $query->where('title', 'like', '%' . $searchTerm . '%');
-            })
-            ->orWhereHas('products.shop', function (Builder $query) use ($searchTerm) {
-                $query->where('name', 'like', '%' . $searchTerm . '%');
-            });
+        $groupIds = collect(
+            Product::search($searchTerm)->raw()['hits'] ?? []
+        )->pluck('group_id')->unique();
+
+        $query = $query->whereIn('id', $groupIds);
         return $query;
     }
 
