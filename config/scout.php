@@ -42,7 +42,11 @@ return [
     |
     */
 
-    'queue' => env('SCOUT_QUEUE', false),
+    'queue' => false,//todo: fix
+//    'queue' => [
+//        'connection' => env('SCOUT_QUEUE_CONNECTION', 'redis'),
+//        'queue' => env('SCOUT_QUEUE_NAME', 'scout'),
+//    ],
 
     /*
     |--------------------------------------------------------------------------
