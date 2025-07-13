@@ -150,11 +150,13 @@ class Group extends Model
             Product::search($searchTerm)->raw()['hits'] ?? []
         )->pluck('group_id')->unique();
 
-        //sort first x elements as sail order
-        $idOrder = $groupIds->take(1_000)->implode(',');
 
         return $query->whereIn('id', $groupIds)
-            ->orderByRaw('FIELD(id, ' . $idOrder . ')');
+            ->when($groupIds->isNotEmpty(), function ($query) use ($groupIds) {
+                //sort first x elements as sail order
+                $idOrder = $groupIds->take(1_000)->implode(',');
+                $query->orderByRaw('FIELD(id, ' . $idOrder . ')');
+            });
     }
 
     public function scopeFallbackSearch($query, $searchTerm)
