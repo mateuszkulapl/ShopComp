@@ -16,8 +16,9 @@ class CategoryFactory extends Factory
     {
         return [
             'parent_id' => null,
-            'name' => $this->faker->words(2, true),
-            'url' => $this->faker->url()
+            'name' => fake()->words(rand(1,4), true),
+            'url' => fake()->url(),
+            'shop_unique_cat_key'=>fake()->unique()->slug(),
         ];
     }
 }

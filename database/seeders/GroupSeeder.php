@@ -2,6 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
+use App\Models\Group;
+use App\Models\Image;
+use App\Models\Product;
+use App\Models\Price;
+use App\Models\Shop;
 use Illuminate\Database\Seeder;
 
 class GroupSeeder extends Seeder
@@ -13,10 +19,7 @@ class GroupSeeder extends Seeder
      */
     public function run()
     {
-        //
-        // $groups=Group::factory()
-        // ->has(Product::factory()->count(3))
-        // ->count(5)
-        // ->create();
+        Group::factory()
+            ->count(fake()->numberBetween(1, 100))->create();
     }
 }
