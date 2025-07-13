@@ -2,6 +2,7 @@
 
 return [
 
+    'enabled' => env('SCOUT_ENABLED', 0),
     /*
     |--------------------------------------------------------------------------
     | Default Search Engine

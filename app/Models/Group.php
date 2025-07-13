@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @method static \Illuminate\Database\Eloquent\Builder search {@see Group::scopeSearch}
+ * @method static \Illuminate\Database\Eloquent\Builder search search using scout if enabled, or fallback if not
  */
 class Group extends Model
 {
@@ -134,12 +136,32 @@ class Group extends Model
      */
     public function scopeSearch($query, $searchTerm)
     {
+        if (Config::boolean('scout.enabled')) {
+            return $query->searchSail($searchTerm);
+            /**@see scopeSearchSail */
+        }
+        return $query->fallbackSearch($searchTerm);
+        /**@see scopeFallbackSearch */
+    }
+
+    public function scopeSearchSail($query, $searchTerm)
+    {
         $groupIds = collect(
             Product::search($searchTerm)->raw()['hits'] ?? []
         )->pluck('group_id')->unique();
 
-        $query = $query->whereIn('id', $groupIds);
-        return $query;
+        return $query->whereIn('id', $groupIds);
+    }
+
+    public function scopeFallbackSearch($query, $searchTerm)
+    {
+        return $query->where('ean', 'like', '%' . $searchTerm . '%')
+            ->orWhereHas('products', function (Builder $query) use ($searchTerm) {
+                $query->where('title', 'like', '%' . $searchTerm . '%');
+            })
+            ->orWhereHas('products.shop', function (Builder $query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%');
+            });
     }
 
     /**
@@ -155,13 +177,12 @@ class Group extends Model
 
     public function getProductNumberText()
     {
-        if($this->products_count)
-        {
-            if($this->products_count==1)
-            $shopVar="sklepu";
+        if ($this->products_count) {
+            if ($this->products_count == 1)
+                $shopVar = "sklepu";
             else
-            $shopVar="sklepów";
-            $output="Dane z $this->products_count $shopVar";
+                $shopVar = "sklepów";
+            $output = "Dane z $this->products_count $shopVar";
             return $output;
         }
         return '';
