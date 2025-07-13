@@ -18,8 +18,14 @@ class ProductFactory extends Factory
         return [
             'shop_id' => Shop::factory(),
             'group_id' => Group::factory(),
-            'title' => fake()->words(rand(1, 8), true) . ' ' . fake()->company(),
+            'title' => self::getFakeTitle(),
             'url' => fake()->url()
         ];
+    }
+
+    private static function getFakeTitle()
+    {
+        return fake()->realText(rand(10, 100), true) .
+            (rand(1, 100) <= 75 ? ' ' . fake()->company() : '');
     }
 }

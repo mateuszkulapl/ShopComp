@@ -20,6 +20,6 @@ class GroupSeeder extends Seeder
     public function run()
     {
         Group::factory()
-            ->count(fake()->numberBetween(1, 100));
+            ->count(fake()->numberBetween(1, 100))->create();
     }
 }

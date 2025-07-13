@@ -24,7 +24,7 @@ class ProductSeeder extends Seeder
         if ($groups->isEmpty()) {
             $groups = Group::factory()->count(5)->create();
         }
-        Product::factory()->count(10)
+        Product::factory()->count(200)
             ->state(function () use ($shops, $groups) {
                 return [
                     //it can create multiple products for same shop, but it's ok for mocking

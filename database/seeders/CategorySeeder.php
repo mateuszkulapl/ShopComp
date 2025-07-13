@@ -19,12 +19,12 @@ class CategorySeeder extends Seeder
         $shops = Shop::all();
         foreach ($shops as $shop) {
             $num = rand(0, 3);
-            $categories = Category::factory()->count($num)->create([
-                'shop_id' => $shop->id,
-            ]);
             if ($num == 0) {
                 continue;
             }
+            $categories = Category::factory()->count($num)->create([
+                'shop_id' => $shop->id,
+            ]);
             Category::factory()->count(rand(0, 5))->create([
                 'shop_id' => $shop->id,
                 'parent_id' => $categories->random()->id,
