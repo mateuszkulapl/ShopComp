@@ -10,9 +10,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "http-interop/http-factory-guzzle": "^1.2",
+        "itsgoingd/clockwork": "^5.1",
         "laravel/framework": "^12.0",
+        "laravel/scout": "^10.15",
         "laravel/tinker": "^2.10.1",
-        "livewire/livewire": "^3.6"
+        "livewire/livewire": "^3.6",
+        "meilisearch/meilisearch-php": "^1.15",
+        "predis/predis": "^3.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -55,6 +60,16 @@
         "dev": [
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
+        ],
+        "scout-import": [
+            "@php artisan scout:import \"App\\Models\\Product\"",
+            "@php artisan queue:work --queue=scout"
+        ],
+        "scout-flush": [
+            "sail artisan scout:flush \"App\\Models\\Product\""
+        ],
+        "migrate-fresh": [
+            "@php artisan migrate:fresh --seed"
         ]
     },
     "extra": {

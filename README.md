@@ -15,23 +15,28 @@ A web application to track and compare prices in online shops, built using the P
 *   Tailwind CSS
 *   ApexCharts.js
 *   Livewire
+*   Meilisearch
 
 
 ## Getting Started
 
 To set up the Price Tracker Application on your local machine, follow these steps:
 
-1.  **Clone the repository**: Clone this repository to your local machine using `git clone`.
+1. **Clone the repository**: Clone this repository to your local machine using `git clone`.
 
-2.  **Install dependencies**: Run `composer install` to install the required dependencies.
+2. **Install dependencies**: Run `composer install` to install the required dependencies.
 
-3.  **Configure environment**: Copy the `.env.example` file to `.env` and fill in the required information, including database connection credentials and any API keys.
+3. **Configure environment**: Copy the `.env.example` file to `.env` and fill in the required information, including database connection credentials and any API keys.
 
-4.  **Run migrations**: Execute `php artisan migrate` to set up the necessary database tables.
+4. **Run migrations**: Execute `php artisan migrate` to set up the necessary database tables.
 
-5.  **Start the application**: Run `php artisan serve` to start the local development server.
+5. **Start the application**: Run `php artisan serve` to start the local development server.
 
-6.  **Insert data**: Use the API to insert data into the database.
+6. **Insert data**: 
+   - Use the API to insert data into the database, or
+   - create sample data with `php artisan db:seed` command.
+
+7. **Import data to Scout**: Run `php artisan scout:import "App\Models\Product"` to import data to meilisearch
 
 For more information on configuring and deploying the application, refer to the Laravel [documentation](http1s://laravel.com/docs).
 

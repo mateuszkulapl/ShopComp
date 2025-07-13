@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-//use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder search search using scout if enabled, or fallback if not
+ */
 class Group extends Model
 {
     use HasFactory;
-    //use SoftDeletes;
 
     protected $fillable = ['ean', 'created_at', 'updated_at'];
     /**
@@ -130,18 +132,42 @@ class Group extends Model
 
 
     /**
-     * Search by group ean, group products title, group products shop name
+     * Search with scout
      */
     public function scopeSearch($query, $searchTerm)
     {
-        $query = $query->where('ean', 'like', '%' . $searchTerm . '%')
+        if (Config::boolean('scout.enabled')) {
+            return $query->searchSail($searchTerm);
+            /**@see scopeSearchSail */
+        }
+        return $query->fallbackSearch($searchTerm);
+        /**@see scopeFallbackSearch */
+    }
+
+    public function scopeSearchSail($query, $searchTerm)
+    {
+        $groupIds = collect(
+            Product::search($searchTerm)->raw()['hits'] ?? []
+        )->pluck('group_id')->unique();
+
+
+        return $query->whereIn('id', $groupIds)
+            ->when($groupIds->isNotEmpty(), function ($query) use ($groupIds) {
+                //sort first x elements as sail order
+                $idOrder = $groupIds->take(1_000)->implode(',');
+                $query->orderByRaw('FIELD(id, ' . $idOrder . ')');
+            });
+    }
+
+    public function scopeFallbackSearch($query, $searchTerm)
+    {
+        return $query->where('ean', 'like', '%' . $searchTerm . '%')
             ->orWhereHas('products', function (Builder $query) use ($searchTerm) {
                 $query->where('title', 'like', '%' . $searchTerm . '%');
             })
             ->orWhereHas('products.shop', function (Builder $query) use ($searchTerm) {
                 $query->where('name', 'like', '%' . $searchTerm . '%');
             });
-        return $query;
     }
 
     /**
@@ -157,13 +183,12 @@ class Group extends Model
 
     public function getProductNumberText()
     {
-        if($this->products_count)
-        {
-            if($this->products_count==1)
-            $shopVar="sklepu";
+        if ($this->products_count) {
+            if ($this->products_count == 1)
+                $shopVar = "sklepu";
             else
-            $shopVar="sklepów";
-            $output="Dane z $this->products_count $shopVar";
+                $shopVar = "sklepów";
+            $output = "Dane z $this->products_count $shopVar";
             return $output;
         }
         return '';
