@@ -146,7 +146,7 @@ return [
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
             \App\Models\Product::class => [
-                'filterableAttributes' => ['id', 'title', 'shop', 'url', 'ean'],
+                'filterableAttributes' => ['id', 'title', 'shop', 'url', 'ean', 'group_id'],
                 'sortableAttributes' => ['id', 'created_at', 'shop'],
             ],
         ]

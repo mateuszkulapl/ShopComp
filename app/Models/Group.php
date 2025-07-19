@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @method static \Illuminate\Database\Eloquent\Builder search search using scout if enabled, or fallback if not
+ * @method static Builder search search using scout if enabled, or fallback if not
+ * @property ?string highlighted_title title from scout search
  */
 class Group extends Model
 {
@@ -65,6 +66,7 @@ class Group extends Model
     {
         return $this->hasOne(Product::class)->latestOfMany();
     }
+
     /**
      * Get the group's oldest product.
      */
@@ -75,12 +77,13 @@ class Group extends Model
     }
 
     //todo: fix
+
     /**
      * Get the group's price from 7 days
      */
     public function priceWeekRange()
     {
-        return $this->prices()->whereDate('prices.created_at', '>',  Carbon::now()->subDays(7)); //it gets all the prices from the selected period, not the latest ones
+        return $this->prices()->whereDate('prices.created_at', '>', Carbon::now()->subDays(7)); //it gets all the prices from the selected period, not the latest ones
     }
 
     /*
@@ -136,25 +139,41 @@ class Group extends Model
      */
     public function scopeSearch($query, $searchTerm)
     {
+
         if (Config::boolean('scout.enabled')) {
-            return $query->searchSail($searchTerm);
-            /**@see scopeSearchSail */
+            /**@see scopeSearchScout */
+            return $query->searchScout($searchTerm);
         }
-        return $query->fallbackSearch($searchTerm);
         /**@see scopeFallbackSearch */
+        return $query->fallbackSearch($searchTerm);
     }
 
-    public function scopeSearchSail($query, $searchTerm)
+    public static function modifyProductSearchMeilisearchOptions(array $options)
     {
-        $groupIds = collect(
-            Product::search($searchTerm)->raw()['hits'] ?? []
-        )->pluck('group_id')->unique();
+        $options['limit'] = 10_000;
+        $options['distinct'] = 'group_id';
+        $options['attributesToRetrieve'] = ['id', 'group_id', 'title'];
+        $options['attributesToHighlight'] = ['title'];
+        return $options;
+    }
 
+    public function scopeSearchScout(Builder $query, $searchTerm)
+    {
+        $matchingProducts =
+            collect(Product::search($searchTerm,
+                function (\Meilisearch\Endpoints\Indexes $index, $searchText, $options) {
+                    $options = self::modifyProductSearchMeilisearchOptions($options);
+                    return $index->search($searchText, $options);
+                }
+            )->raw()['hits'] ?? []);
+
+        $groupIds = $matchingProducts->pluck('group_id');
+        $this->addScoutAfterSearchQuery($query, $matchingProducts);
 
         return $query->whereIn('id', $groupIds)
             ->when($groupIds->isNotEmpty(), function ($query) use ($groupIds) {
-                //sort first x elements as sail order
-                $idOrder = $groupIds->take(1_000)->implode(',');
+                //sort first x elements as scout order
+                $idOrder = $groupIds->take(10_000)->implode(',');
                 $query->orderByRaw('FIELD(id, ' . $idOrder . ')');
             });
     }
@@ -192,5 +211,16 @@ class Group extends Model
             return $output;
         }
         return '';
+    }
+
+    private function addScoutAfterSearchQuery(Builder $query, \Illuminate\Support\Collection $matchingProducts): void
+    {
+        $highlightedTitles = $matchingProducts->pluck('_formatted.title', 'group_id');
+        $query->afterQuery(function ($groups) use ($highlightedTitles) {
+            $groups->each(function ($group) use ($highlightedTitles) {
+                $group->highlighted_title = $highlightedTitles[$group->id] ?? null;
+            });
+        });
+
     }
 }

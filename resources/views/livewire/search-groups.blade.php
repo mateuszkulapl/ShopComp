@@ -20,8 +20,8 @@
                                                 </div>
                                             @endif
                                         </div>
-                                        <div class="basis-10/12 pl-2">
-                                            {{ $group->oldestProduct->title }}
+                                        <div class="basis-10/12 pl-2 highlighted_search">
+                                            {!! $group->highlighted_title !!}
                                         </div>
                                     </a>
                                 </li>
