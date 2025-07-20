@@ -29,7 +29,6 @@
         @endif
     @endif
     <meta name="description" content="{{ $metaDesc }}">
-    @livewireStyles
 </head>
 
 <body class="bg-slate-800 text-slate-50 font-sans flex flex-col h-screennpx @tailwindcss/upgrade">
