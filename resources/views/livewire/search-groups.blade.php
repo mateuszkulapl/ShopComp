@@ -1,27 +1,28 @@
 <div class="mx-auto">
-    <form class="flex items-center w-full justify-center flex-wrap my-1" action="{{ route('group.searchPost') }}"
+    <form class="flex items-center w-full justify-center flex-wrap my-1 gap-y-2" action="{{ route('group.searchPost') }}"
           method="post">
         @csrf
         <label class="mr-4 text-md sm:text-lg" for="search">{{ __('search.search') }}</label>
         <div class="relative">
-
-            <input
-                class="inline-block w-48 sm:w-96 text-sm sm:text-md py-1 px-2 shadow-sm bg-slate-700 hover:bg-slate-600 duration-100 hover:duration-300 border-none rounded-md outline-none ring-1 ring-slate-600 rounded-r-none mr-0 @if ($groups) rounded-b-none @endif "
-                id="search" name="search" type="text" value="" wire:model.live="search"
-                placeholder="Podaj nazwę produktu" required autocomplete="off">
-            <button
-                class="inline-block py-1 px-4 text-sm sm:text-md shadow-sm bg-slate-700 hover:bg-slate-600 active:bg-slate-400 duration-100 hover:duration-300 border-none rounded-md outline-none ring-1 ring-slate-600 rounded-l-none ml-0 @if ($groups) rounded-b-none @endif "
-                type="submit">{{ __('search.search_button') }}
-            </button>
+            <div class="flex w-96 sm:w-96 text-sm sm:text-md">
+                <input
+                    class="flex-auto py-1 px-2 shadow-sm bg-slate-700 hover:bg-slate-600 duration-100 hover:duration-300 border-none rounded-md outline-none ring-1 ring-slate-600 rounded-r-none mr-0 @if ($groups) rounded-b-none @endif "
+                    id="search" name="search" type="text" value="" wire:model.live="search"
+                    placeholder="Podaj nazwę produktu" required autocomplete="off">
+                <button
+                    class="flex-initial py-1 px-4 shadow-sm bg-slate-700 hover:bg-slate-600 duration-100 active:bg-slate-400 hover:duration-300 border-none rounded-md outline-none ring-1 ring-slate-600 rounded-l-none ml-0 @if ($groups) rounded-b-none @endif "
+                    type="submit">{{ __('search.search_button') }}
+                </button>
+            </div>
             @if ($groups != null)
                 <div
                     class="absolute z-30 block w-full text-sm sm:text-md ring-1 ring-slate-600 shadow-lg shadow-slate-900 bg-slate-600  rounded-b-md border-none"
                     id="searchResults" wire:loading.class.delay="loading">
                     @if ($groups->isNotEmpty())
-                        <ul class="space-y-1">
+                        <ul>
                             @foreach ($groups as $group)
                                 <li>
-                                    <a class="pr-2  w-full flex items-center hover:bg-slate-500 active:bg-slate-400 duration-100 hover:duration-300 "
+                                    <a class="pr-2  w-full flex items-center hover:bg-slate-500 active:bg-slate-400 duration-100 hover:duration-300"
                                        href="{{ $group->app_url }}">
                                         <div class="basis-2/12">
                                             @if ($group->oldestProduct->oldestImage)
@@ -32,7 +33,7 @@
                                                 </div>
                                             @endif
                                         </div>
-                                        <div class="basis-10/12 pl-2 highlighted_search">
+                                        <div class="basis-10/12 pl-2 highlighted_search py-1">
                                             @if (Config::boolean('scout.enabled'))
                                                 {!! $group->highlighted_title !!}
                                             @else
