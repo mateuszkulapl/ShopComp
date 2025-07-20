@@ -33,7 +33,11 @@
                                             @endif
                                         </div>
                                         <div class="basis-10/12 pl-2 highlighted_search">
-                                            {!! $group->highlighted_title !!}
+                                            @if (Config::boolean('scout.enabled'))
+                                                {!! $group->highlighted_title !!}
+                                            @else
+                                                {{ $group->oldestProduct->title }}
+                                            @endif
                                         </div>
                                     </a>
                                 </li>
