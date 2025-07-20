@@ -26,7 +26,7 @@
                                        href="{{ $group->app_url }}">
                                         <div class="basis-2/12">
                                             @if ($group->oldestProduct->oldestImage)
-                                                <div class="bg-white flex items-center rounded-t-md">
+                                                <div class="bg-white flex items-center">
                                                     <img class="max-w-full max-h-full w-auto mx-auto "
                                                          src="{{ $group->oldestProduct->oldestImage->getUrl(75) }}"
                                                          alt="{{ $group->oldestProduct->title }}">
