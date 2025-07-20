@@ -20,7 +20,7 @@
                 outline-none
                 ring-1 ring-slate-400 focus:ring-slate-200
                 " id="search" name="search" type="text"
-                   value="{{ old('search') ? old('search') : ($searchTerm ? $searchTerm : '') }}"
+                   value="{{ old('search') ?? ($searchTerm ?? '') }}"
                    placeholder="{!! __('search.input_placeholder') !!}" required {{ $searchTerm ? '' : ' autofocus ' }}>
 
             <button class=" inline-block shadow-sm
