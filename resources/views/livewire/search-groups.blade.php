@@ -19,7 +19,7 @@
                     class="absolute z-30 block w-full text-sm sm:text-md ring-1 ring-slate-600 shadow-lg shadow-slate-900 bg-slate-600  rounded-b-md border-none"
                     id="searchResults" wire:loading.class.delay="loading">
                     @if ($groups->isNotEmpty())
-                        <ul>
+                        <ul class="space-y-1">
                             @foreach ($groups as $group)
                                 <li>
                                     <a class="pr-2  w-full flex items-center hover:bg-slate-500 active:bg-slate-400 duration-100 hover:duration-300"
