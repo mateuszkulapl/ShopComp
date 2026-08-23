@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     'enabled' => env('SCOUT_ENABLED', 0),

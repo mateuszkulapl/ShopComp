@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'products_not_found' => 'No products found',
     'search_again_cta' => 'Search again',
@@ -10,4 +12,3 @@ return [
     'see_search_lists' => 'View search results',
     'see_all_matching'=> 'See all matching :searchTerm'
 ];
-

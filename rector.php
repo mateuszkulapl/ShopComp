@@ -48,8 +48,6 @@ return RectorConfig::configure()
 
     ])
     ->withSkip([
-        SafeDeclareStrictTypesRector::class,
-        DeclareStrictTypesRector::class,
         AddClosureVoidReturnTypeWhereNoReturnRector::class,
         ClosureToArrowFunctionRector::class,
         FinalizeTestCaseClassRector::class,

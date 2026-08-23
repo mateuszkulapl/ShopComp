@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'products_not_found' => 'Nie znaleziono produktów',
     'search_again_cta' => 'Wyszukaj ponownie',
