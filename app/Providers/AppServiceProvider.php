@@ -21,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Database\Eloquent\Model::preventAccessingMissingAttributes(!$this->app->isProduction());
+        \Illuminate\Database\Eloquent\Model::preventSilentlyDiscardingAttributes(!$this->app->isProduction());
+        \Illuminate\Database\Eloquent\Model::preventLazyLoading(!$this->app->isProduction());
     }
 }
