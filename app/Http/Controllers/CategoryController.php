@@ -14,12 +14,13 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Shop $shop)
+    public function index(Shop $shop): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $categories = $shop->categories()->where('parent_id', null)->with('children')->withCount('children', 'products')->orderBy('name', 'asc')->get();
-        foreach ($categories as $cat) {
-            $cat->shop = $shop; //prevent additional query
+        foreach ($categories as $category) {
+            $category->shop = $shop; //prevent additional query
         }
+
         $breadcumbs = $this->getCategoryBreadcumbs($shop);
 
         return view('category.index', [
@@ -33,10 +34,9 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Shop $shop, Category $category)
+    public function show(Shop $shop, Category $category): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         if ($category->shop != $shop)
             throw new \Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -69,13 +69,14 @@ class CategoryController extends Controller
         ]);
     }
 
-    private function getCategoryBreadcumbs($shop, $category = null)
+    private function getCategoryBreadcumbs(\App\Models\Shop $shop, $category = null)
     {
         $breadcumbs = collect();
 
         $allShops = new stdClass();
         $allShops->appUrl = route('shop.index');
         $allShops->breadcumbTitle = "Sklepy";
+
         $breadcumbs->push($allShops);
 
         $breadcumbs->push($shop);
@@ -84,6 +85,7 @@ class CategoryController extends Controller
         $allCats = new stdClass();
         $allCats->appUrl = route('category.index', ['shop' => $shop]);
         $allCats->breadcumbTitle = "Kategorie";
+
         $breadcumbs->push($allCats);
 
         $categoriesBreadcumbs = collect();
@@ -94,8 +96,10 @@ class CategoryController extends Controller
                 $currentLevel = $currentLevel->ancestor;
                 $categoriesBreadcumbs->push($currentLevel);
             }
+
             $breadcumbs = $breadcumbs->concat($categoriesBreadcumbs->reverse());
         }
+
         return $breadcumbs;
     }
 }

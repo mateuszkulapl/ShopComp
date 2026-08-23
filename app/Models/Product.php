@@ -50,6 +50,7 @@ class Product extends Model
 {
     use HasFactory;
     use Searchable;
+
     //use SoftDeletes;
 
     protected $fillable = ['shop_id', 'group_id', 'title', 'url', 'created_at', 'updated_at'];
@@ -61,7 +62,8 @@ class Product extends Model
      * @var array
      */
     protected $visible = ['title', 'url', 'shop', 'group', 'images', 'categories', 'created_now', 'price'];
-    private $chartPrices=null;
+
+    private $chartPrices;
 
 
     public function toSearchableArray(): array
@@ -76,6 +78,7 @@ class Product extends Model
             'group_id' => $this->group_id,
         ];
     }
+
     /**
      * Modify the query used to retrieve models when making all of the models searchable.
      */
@@ -115,6 +118,7 @@ class Product extends Model
     {
         return $this->belongsTo(Shop::class);
     }
+
     /**
      * Get the group that the product belongs to.
      */
@@ -154,6 +158,7 @@ class Product extends Model
     {
         return $this->hasOne(Price::class)->latestOfMany(); //retrieve the latest or oldest related model based on the model's primary key
     }
+
     /**
      * Get the product's oldest price.
      */
@@ -161,6 +166,7 @@ class Product extends Model
     {
         return $this->hasOne(Price::class)->oldestOfMany(); //retrieve the latest or oldest related model based on the model's primary key
     }
+
     /**
      * Get the product's largest original price.
      */
@@ -168,6 +174,7 @@ class Product extends Model
     {
         return $this->hasOne(Price::class)->ofMany('original_price', 'max');
     }
+
     /**
      * Get the product's lowest original price.
      */

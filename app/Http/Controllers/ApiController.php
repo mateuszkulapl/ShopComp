@@ -41,6 +41,7 @@ class ApiController extends Controller
                 404
             );
         }
+
         foreach ($request->input('product') as $key => $requestProduct) {
 
             $r = null;
@@ -67,7 +68,6 @@ class ApiController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -97,7 +97,7 @@ class ApiController extends Controller
     public function storeOne($p)
     {
         /*note: ISO-8601 dates - UTC */
-        $response = DB::transaction(function () use ($p) {
+        $response = DB::transaction(function () use ($p): array {
             //$creation_date = Carbon::parse($p['creation_date'])->toDateTimeString();
             $creation_date = Carbon::now()->toDateTimeString();
             $validator = Validator::make($p, [
@@ -135,10 +135,11 @@ class ApiController extends Controller
                 $group->updated_at = $creation_date;
                 $group->save(['timestamps' => false]);
             }
+
             $group->created_now = $group->wasRecentlyCreated;
 
 
-            $url = isset($p['url']) ? $p['url'] : null;
+            $url = $p['url'] ?? null;
             $product = Product::updateOrCreate(
                 ['shop_id' => $shop->id, 'group_id' => $group->id],
                 ['title' => $p['title'], 'url' => $url]
@@ -152,13 +153,9 @@ class ApiController extends Controller
             $product->created_now = $product->wasRecentlyCreated;
 
 
-            $priceOld = isset($p['price_old']) ? $p['price_old'] : null;
+            $priceOld = $p['price_old'] ?? null;
             $price = $this->processPostedPrice($p['price_current'], $priceOld, $product, $creation_date);
-            if (isset($p['images'])) {
-                $postedImages = $this->processPostedImages($p['images'], $product->id, $creation_date);
-            } else {
-                $postedImages = [];
-            }
+            $postedImages = isset($p['images']) ? $this->processPostedImages($p['images'], $product->id, $creation_date) : [];
 
             $categories = [];
 
@@ -178,6 +175,7 @@ class ApiController extends Controller
             if ($group->wasRecentlyCreated) {
                 Cache::forget('homepageGroups_page-1');
             }
+
             return
                 [
                     'status_code' => 200,
@@ -195,10 +193,9 @@ class ApiController extends Controller
      *
      * @param array $postUrls
      * @param int $productId
-     * @param string $creation_date
      * @return Illuminate\Support\Collection collection of posted images with created_now property
      */
-    private function processPostedImages($postUrls, $productId, $creation_date)
+    private function processPostedImages($postUrls, $productId, string $creation_date)
     {
         $postedImages = collect();
         foreach ($postUrls as $postUrl) {
@@ -216,6 +213,7 @@ class ApiController extends Controller
             $image->created_now = $image->wasRecentlyCreated;
             $postedImages->push($image);
         }
+
         Image::where('product_id', $productId)->whereNotIn('id', $postedImages->pluck('id'))->delete(); //delete all imagex except posted ones
         return $postedImages;
     }
@@ -228,7 +226,7 @@ class ApiController extends Controller
      * @param App\Models\Product $product
      * @return App\Models\Price price with created_now and updated_now properties
      */
-    private function processPostedPrice($postPriceCurrent, $postPriceOld, $product, $creation_date)
+    private function processPostedPrice($postPriceCurrent, $postPriceOld, $product, string $creation_date)
     {
         $newPrice = new Price();
 
@@ -260,17 +258,18 @@ class ApiController extends Controller
             $price = $newPrice;
             $price->created_now = true;
         }
+
         return $price;
     }
+
     /**
      * Add categories to product
      *
      * @param array $categories
      * @param int $shopId
-     * @param string $creation_date
      * @return Illuminate\Support\Collection collection of posted categories with created_now property
      */
-    private function processPostedCategories($postCategories, $shopId, $creation_date)
+    private function processPostedCategories($postCategories, $shopId, string $creation_date)
     {
         //TODO: prevent recursion
         $categories = collect();
@@ -280,10 +279,11 @@ class ApiController extends Controller
                 $categories->push($category);
             }
         }
+
         return $categories;
     }
 
-    private function processPostedCategory($postCategory, $shopId, $creation_date)
+    private function processPostedCategory(array $postCategory, $shopId, $creation_date)
     {
         $parent_id = null;
         if (isset($postCategory['parent'])) {
@@ -306,26 +306,29 @@ class ApiController extends Controller
         if (isset($postCategory['url'])) {
             $category->url = $postCategory['url'];
         }
+
         $category->name = $postCategory['name'];
 
         if ($category->isDirty()) {
             $category->updated_at = $creation_date;
             $category->save(['timestamps' => false]);
         }
+
         $category->created_now = $category->wasRecentlyCreated;
         $category->load('ancestor');
         return $category;
     }
 
 
-    private function isApiTokenValid(Request $request)
+    private function isApiTokenValid(Request $request): string|true
     {
         //TODO: move to middleware
         $token = $request->header('Authorization');
         if ($token == null) {
             return 'Token is missing.';
         }
-        $apiToken = env('API_TOKEN', null);
+
+        $apiToken = env('API_TOKEN');
         if ($apiToken != null && $token == $apiToken)
             return true;
 

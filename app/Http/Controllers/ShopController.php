@@ -15,12 +15,13 @@ class ShopController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $breadcumbs = collect();
         $allShops = new stdClass();
         $allShops->appUrl = route('shop.index');
         $allShops->breadcumbTitle = "Sklepy";
+
         $breadcumbs->push($allShops);
 
         $shops = Shop::withCount('products', 'categories')->with('latestProduct', 'oldestProduct')->get();
@@ -33,10 +34,9 @@ class ShopController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Shop  $shop
      * @return \Illuminate\Http\Response
      */
-    public function show(Shop $shop, $searchTerm = null)
+    public function show(Shop $shop, $searchTerm = null): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $products = $shop->products()->latest();
 
@@ -52,10 +52,12 @@ class ShopController extends Controller
             $title = $shop->name;
             $appendTitleSuffix = true;
         }
+
         $breadcumbs = collect();
         $allShops = new stdClass();
         $allShops->appUrl = route('shop.index');
         $allShops->breadcumbTitle = "Sklepy";
+
         $breadcumbs->push($allShops);
         $breadcumbs->push($shop);
 

@@ -7,7 +7,7 @@ use stdClass;
 
 class CartController extends Controller
 {
-    public function index($eans = '')
+    public function index($eans = ''): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $eanCodes = explode(',', $eans);
         $groups = \App\Models\Group::whereIn('ean', $eanCodes)->orderBy('ean')->get();
@@ -26,6 +26,7 @@ class CartController extends Controller
             $group->minPrice = $group->products->min('latestPrice.current');
             $group->avgPrice = $group->products->avg('latestPrice.current');
         }
+
         //for all shops, calculate the total price of all products in cart, if price is not available, get group avg price from other shops instead
         foreach ($shops as $shop) {
             //prices of products in cart from this shop
@@ -50,6 +51,7 @@ class CartController extends Controller
         $cart = new stdClass();
         $cart->appUrl = route('cart.index');
         $cart->breadcumbTitle = "Koszyk";
+
         $breadcumbs->push($cart);
         return $breadcumbs;
     }

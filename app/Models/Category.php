@@ -42,6 +42,7 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     use HasFactory;
+
     //use SoftDeletes;
 
     protected $fillable = ['name', 'shop_id', 'parent_id', 'url', 'shop_unique_cat_key', 'created_at', 'updated_at'];
@@ -66,14 +67,17 @@ class Category extends Model
     {
         return $this->hasMany(self::class, 'parent_id');
     }
+
     public function descendant()
     {
         return $this->children()->with('descendant');
     }
+
     public function parent()
     {
         return $this->belongsTo(self::class, 'parent_id');
     }
+
     public function ancestor()
     {
         return $this->parent()->with('ancestor');
@@ -88,10 +92,8 @@ class Category extends Model
 
     /**
      * Determine app url
-     *
-     * @return string
      */
-    public function getAppUrlAttribute()
+    public function getAppUrlAttribute(): string
     {
         return route('category.show', ['shop' => $this->shop, 'category' => $this]);
     }

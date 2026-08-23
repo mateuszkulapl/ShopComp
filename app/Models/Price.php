@@ -32,6 +32,7 @@ use DateTimeInterface;
 class Price extends Model
 {
     use HasFactory;
+
     //use SoftDeletes;
 
     protected $fillable = ['product_id', 'current', 'old', 'created_at', 'updated_at'];
@@ -60,7 +61,7 @@ class Price extends Model
     /***
      * Get pair of creation date (miliseconds), and current price e.g. [1665266400000,74.61]
      */
-    public function getXYPair()
+    public function getXYPair(): string
     {
         return '[' . $this->created_at->startOfDay()->valueOf() . ',' . ($this->current) . ']';
     }
@@ -68,7 +69,6 @@ class Price extends Model
     /**
      * Prepare a date for array / JSON serialization.
      *
-     * @param  \DateTimeInterface  $date
      * @return string
      */
     protected function serializeDate(DateTimeInterface $date)
@@ -76,11 +76,12 @@ class Price extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function currentFormatted()
+    public function currentFormatted(): string
     {
         return number_format($this->current, 2, ",", "") . ' zł ';
     }
-    public function oldFormatted()
+
+    public function oldFormatted(): string
     {
         return number_format($this->old, 2, ",", "") . ' zł ';
     }

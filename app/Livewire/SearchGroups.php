@@ -11,13 +11,14 @@ class SearchGroups extends Component
     public $search = '';
 
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         if (strlen($this->search) > 2){
             $groups = Group::search($this->search)->with('oldestProduct', 'oldestProduct.oldestImage')->simplePaginate(5);
         }
         else
             $groups = null;
+
         return view('livewire.search-groups', [
             'groups' =>  $groups,
             'searchTerm' => $this->search

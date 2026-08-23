@@ -7,6 +7,7 @@ use App\Models\Group;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Symfony\Component\HttpFoundation\Response;
 
 class GroupController extends Controller
 {
@@ -26,6 +27,7 @@ class GroupController extends Controller
             $searchExamplesAll->push("Milka", "Sok pomarańczowy", "Masło", "Lay's", "Mleko", "Dżem", "Parówki", "Actimel", "Herbata", "Kawa ", "Prince Polo", "Dżem", "Makaron", "Płatki śniadaniowe", "Cukier", "Mąka ");
             $searchExamples = $searchExamplesAll->random(3);
         }
+
         $currentPage = request()->get('page', 1);
         //cache only first page of homepage without search term
         if($currentPage == 1 && $searchTerm == null)
@@ -39,7 +41,7 @@ class GroupController extends Controller
         if ($searchTerm != null && $groups->total() == 1 && $groups->items()[0]->ean == $searchTerm)
             return redirect($groups->items()[0]->appUrl, 301);
 
-        $groups->total() == 0 ? $httpCode = 404 : $httpCode = 200;
+        $httpCode = $groups->total() == 0 ? Response::HTTP_NOT_FOUND : Response::HTTP_OK;
         return response()->view('group.index', [
             'groups' => $groups,
             'searchTerm' => $searchTerm,
@@ -50,7 +52,7 @@ class GroupController extends Controller
         ], $httpCode);
     }
 
-    public function searchPost()
+    public function searchPost(): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {
         request()->validate([
             'search' => ['required']
@@ -65,10 +67,11 @@ class GroupController extends Controller
 
 
 
-    public function getShowView(Group $group)
+    public function getShowView(Group $group): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $products = $group->products()->with('shop', 'prices', 'images', 'categories', 'categories.shop')->get();
         $products = $products->keyBy('id');
+
         $priceTable = collect();
         foreach ($products as $product) {
             $value = $product->prices->first()->current;
@@ -76,6 +79,7 @@ class GroupController extends Controller
                 $price->change = $price->current - $value;
                 $value = $price->current;
             }
+
             $priceTable = $priceTable->merge($product->prices);
         }
 
@@ -111,12 +115,11 @@ class GroupController extends Controller
         });
 
         foreach ($priceTableGroupedByProduct as $product_id => $priceTableProduct) {
-            $chartPrices = null;
-            $chartPrices = $priceTableProduct->map(function ($price, $key) {
+            $chartPrices = $priceTableProduct->map(function ($price, $key): array {
                 return [$key, floatval($price->current)];
             });
 
-            $diffDates = $priceTableGroupedByDateTimestamp->diffKeys($chartPrices)->map(function ($price, $key) {
+            $diffDates = $priceTableGroupedByDateTimestamp->diffKeys($chartPrices)->map(function ($price, $key): array {
                 return [$key, null];
             });
 
@@ -125,7 +128,7 @@ class GroupController extends Controller
 
         $index = 0;
         $apexchartPaletteSize = count($apexchartPalette);
-        foreach ($products as $product_id => $product) {
+        foreach ($products as $product) {
             $product->color = $apexchartPalette[($index++) % $apexchartPaletteSize] . "";
         }
 
@@ -140,13 +143,13 @@ class GroupController extends Controller
         ]);
     }
 
-    public function show(Group $group, String $oldestProductTitleSlug = '')
+    public function show(Group $group, String $oldestProductTitleSlug = ''): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
     {
-        $group->oldestProduct ? $correctOldestProductTitleSlug = Str::slug($group->oldestProduct->title) : $correctOldestProductTitleSlug = '';
+        $correctOldestProductTitleSlug = $group->oldestProduct ? Str::slug($group->oldestProduct->title) : '';
         if ($correctOldestProductTitleSlug == $oldestProductTitleSlug) {
             return $this->getShowView($group);
-        } else {
-            return redirect(route('group.show', [$group, 'title' => $correctOldestProductTitleSlug]), 301);
         }
+
+        return redirect(route('group.show', [$group, 'title' => $correctOldestProductTitleSlug]), 301);
     }
 }

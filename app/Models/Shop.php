@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Model;
 class Shop extends Model
 {
     use HasFactory;
+
     //use SoftDeletes;
 
 
@@ -90,6 +91,7 @@ class Shop extends Model
     {
         return $this->hasOne(Product::class)->latestOfMany();
     }
+
     /**
      * Get the shop's oldest product.
      */
@@ -100,20 +102,16 @@ class Shop extends Model
 
     /**
      * Determine app url
-     *
-     * @return string
      */
-    public function getAppUrlAttribute()
+    public function getAppUrlAttribute(): string
     {
         return route('shop.show', ['shop' => $this->id]);
     }
 
     /**
      * Determine breadcumb element title
-     *
-     * @return string
      */
-    public function getBreadcumbTitleAttribute()
+    public function getBreadcumbTitleAttribute(): string
     {
         return ucfirst($this->name);
     }

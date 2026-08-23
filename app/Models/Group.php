@@ -45,6 +45,7 @@ class Group extends Model
     use HasFactory;
 
     protected $fillable = ['ean', 'created_at', 'updated_at'];
+
     /**
      * The attributes that should be visible in arrays.
      *
@@ -126,28 +127,27 @@ class Group extends Model
             });
     }
 
-    public function displayLatestPriceWeekRange()
+    public function displayLatestPriceWeekRange(): string
     {
 
         if (count($this->latestPriceWeekRange) > 0) {
             $min = (float) $this->latestPriceWeekRange->min('current');
             $max = (float) $this->latestPriceWeekRange->max('current');
-            if ($min != $max)
+            if ($min !== $max)
                 return 'Cena od ' . number_format($min, 2, ",", "") . ' zł do ' . number_format($max, 2, ",", "") . " zł";
-            else
-                return 'Cena ' . number_format($min, 2, ",", "") . ' zł';
-        } else
-            return '';
+
+            return 'Cena ' . number_format($min, 2, ",", "") . ' zł';
+        }
+
+        return '';
     }
 
     /**
      * Determine app url
-     *
-     * @return string
      */
-    public function getAppUrlAttribute()
+    public function getAppUrlAttribute(): string
     {
-        $this->oldestProduct ? $correctOldestProductTitleSlug = Str::slug($this->oldestProduct->title) : $correctOldestProductTitleSlug = '';
+        $correctOldestProductTitleSlug = $this->oldestProduct ? Str::slug($this->oldestProduct->title) : '';
         return route('group.show', ['group' => $this->ean, 'title' => $correctOldestProductTitleSlug]);
     }
 
@@ -155,8 +155,8 @@ class Group extends Model
     {
         if ($this->oldestProduct)
             return $this->ean . ' - ' . $this->oldestProduct->title;
-        else
-            return $this->ean;
+
+        return $this->ean;
     }
 
 
@@ -170,11 +170,12 @@ class Group extends Model
             /**@see scopeSearchScout */
             return $query->searchScout($searchTerm);
         }
+
         /**@see scopeFallbackSearch */
         return $query->fallbackSearch($searchTerm);
     }
 
-    public static function modifyProductSearchMeilisearchOptions(array $options)
+    public static function modifyProductSearchMeilisearchOptions(array $options): array
     {
         $options['limit'] = 10_000;
         $options['distinct'] = 'group_id';
@@ -183,20 +184,20 @@ class Group extends Model
         return $options;
     }
 
-    public function scopeSearchScout(Builder $query, $searchTerm)
+    public function scopeSearchScout(Builder $builder, $searchTerm)
     {
         $matchingProducts =
             collect(Product::search($searchTerm,
-                function (\Meilisearch\Endpoints\Indexes $index, $searchText, $options) {
+                function (\Meilisearch\Endpoints\Indexes $indexes, ?string $searchText, $options) {
                     $options = self::modifyProductSearchMeilisearchOptions($options);
-                    return $index->search($searchText, $options);
+                    return $indexes->search($searchText, $options);
                 }
             )->raw()['hits'] ?? []);
 
         $groupIds = $matchingProducts->pluck('group_id');
-        $this->addScoutAfterSearchQuery($query, $matchingProducts);
+        $this->addScoutAfterSearchQuery($builder, $matchingProducts);
 
-        return $query->whereIn('id', $groupIds)
+        return $builder->whereIn('id', $groupIds)
             ->when($groupIds->isNotEmpty(), function ($query) use ($groupIds) {
                 //sort first x elements as scout order
                 $idOrder = $groupIds->take(10_000)->implode(',');
@@ -207,42 +208,37 @@ class Group extends Model
     public function scopeFallbackSearch($query, $searchTerm)
     {
         return $query->where('ean', 'like', '%' . $searchTerm . '%')
-            ->orWhereHas('products', function (Builder $query) use ($searchTerm) {
-                $query->where('title', 'like', '%' . $searchTerm . '%');
+            ->orWhereHas('products', function (Builder $builder) use ($searchTerm) {
+                $builder->where('title', 'like', '%' . $searchTerm . '%');
             })
-            ->orWhereHas('products.shop', function (Builder $query) use ($searchTerm) {
-                $query->where('name', 'like', '%' . $searchTerm . '%');
+            ->orWhereHas('products.shop', function (Builder $builder) use ($searchTerm) {
+                $builder->where('name', 'like', '%' . $searchTerm . '%');
             });
     }
 
     /**
      * Determine breadcumb element title
-     *
-     * @return string
      */
-    public function getBreadcumbTitleAttribute()
+    public function getBreadcumbTitleAttribute(): string
     {
         return $this->ean . " - " . $this->oldestProduct->title;
     }
 
 
-    public function getProductNumberText()
+    public function getProductNumberText(): string
     {
         if ($this->products_count) {
-            if ($this->products_count == 1)
-                $shopVar = "sklepu";
-            else
-                $shopVar = "sklepów";
-            $output = "Dane z $this->products_count $shopVar";
-            return $output;
+            $shopVar = $this->products_count == 1 ? "sklepu" : "sklepów";
+            return "Dane z $this->products_count $shopVar";
         }
+
         return '';
     }
 
-    private function addScoutAfterSearchQuery(Builder $query, \Illuminate\Support\Collection $matchingProducts): void
+    private function addScoutAfterSearchQuery(Builder $builder, \Illuminate\Support\Collection $matchingProducts): void
     {
         $highlightedTitles = $matchingProducts->pluck('_formatted.title', 'group_id');
-        $query->afterQuery(function ($groups) use ($highlightedTitles) {
+        $builder->afterQuery(function ($groups) use ($highlightedTitles) {
             $groups->each(function ($group) use ($highlightedTitles) {
                 $group->highlighted_title = $highlightedTitles[$group->id] ?? null;
             });

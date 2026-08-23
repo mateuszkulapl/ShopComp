@@ -30,6 +30,7 @@ use Illuminate\Support\Str;
 class Image extends Model
 {
     use HasFactory;
+
     //use SoftDeletes;
 
 
@@ -60,6 +61,7 @@ class Image extends Model
         //todo: https://res.cloudinary.com
         if (!$this->url)
             return '';
+
         if ($preferredSize == null)
             return $this->url;
 
@@ -67,6 +69,7 @@ class Image extends Model
             $re = '/(https?:\/\/www\.carrefour\.pl\/images\/product)\/(\d+)x(\d+)\//';
             return preg_replace($re, "$1/" . $preferredSize . "x" . $preferredSize . "/", $this->url);
         }
+
         if (Str::startsWith($this->url, 'https://sklep.stokrotka.pl/files/foto')) {
             //fotos - 96px
             //fotom - 460px
@@ -81,6 +84,7 @@ class Image extends Model
             $re = '/(https?:\/\/sklep\.stokrotka\.pl\/files\/foto)[sbm]\//';
             return preg_replace($re, "$1" . $size . "/", $this->url);
         }
+
         if (Str::startsWith($this->url, 'https://leclerc24gliwice.pl/public/upload/sellasist_cache/thumb_page_')) {
             //thumb_page_small - 140px
             //thumb_page - 448px
