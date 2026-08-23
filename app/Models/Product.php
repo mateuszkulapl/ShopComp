@@ -10,6 +10,42 @@ use Laravel\Scout\Searchable;
 
 //use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property int $shop_id
+ * @property int $group_id
+ * @property int $title tytuł produktu
+ * @property string|null $url
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read Collection<int, \App\Models\Category> $categories
+ * @property-read int|null $categories_count
+ * @property-read \App\Models\Group $group
+ * @property-read Collection<int, \App\Models\Image> $images
+ * @property-read int|null $images_count
+ * @property-read \App\Models\Price|null $largestOriginalPrice
+ * @property-read \App\Models\Price|null $latestPrice
+ * @property-read \App\Models\Price|null $lowestOriginalPrice
+ * @property-read \App\Models\Image|null $oldestImage
+ * @property-read \App\Models\Price|null $oldestPrice
+ * @property-read Collection<int, \App\Models\Price> $prices
+ * @property-read int|null $prices_count
+ * @property-read \App\Models\Shop $shop
+ * @method static \Database\Factories\ProductFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Product newModelQuery()
+ * @method static Builder<static>|Product newQuery()
+ * @method static Builder<static>|Product query()
+ * @method static Builder<static>|Product whereCreatedAt($value)
+ * @method static Builder<static>|Product whereDeletedAt($value)
+ * @method static Builder<static>|Product whereGroupId($value)
+ * @method static Builder<static>|Product whereId($value)
+ * @method static Builder<static>|Product whereShopId($value)
+ * @method static Builder<static>|Product whereTitle($value)
+ * @method static Builder<static>|Product whereUpdatedAt($value)
+ * @method static Builder<static>|Product whereUrl($value)
+ * @mixin \Eloquent
+ */
 class Product extends Model
 {
     use HasFactory;

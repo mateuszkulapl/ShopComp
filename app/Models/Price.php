@@ -7,6 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 //use Illuminate\Database\Eloquent\SoftDeletes;
 use DateTimeInterface;
 
+/**
+ * @property int $id
+ * @property int $product_id
+ * @property numeric $current
+ * @property numeric|null $old
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read \App\Models\Product $product
+ * @method static \Database\Factories\PriceFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Price newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Price newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Price query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Price whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Price whereCurrent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Price whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Price whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Price whereOld($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Price whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Price whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Price extends Model
 {
     use HasFactory;

@@ -21,6 +21,7 @@
         "predis/predis": "^3.0"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.23",
         "itsgoingd/clockwork": "^5.3",
         "laravel/pail": "^1.2.2",

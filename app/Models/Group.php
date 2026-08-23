@@ -11,8 +11,34 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @method static Builder search search using scout if enabled, or fallback if not
- * @property ?string highlighted_title title from scout search
+ * @property int $id
+ * @property string $ean
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read string $app_url
+ * @property-read string $breadcumb_title
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $images
+ * @property-read int|null $images_count
+ * @property-read \App\Models\Product|null $latestProduct
+ * @property-read \App\Models\Product|null $oldestProduct
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Price> $prices
+ * @property-read int|null $prices_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
+ * @property-read int|null $products_count
+ * @method static \Database\Factories\GroupFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Group fallbackSearch($searchTerm)
+ * @method static Builder<static>|Group newModelQuery()
+ * @method static Builder<static>|Group newQuery()
+ * @method static Builder<static>|Group query()
+ * @method static Builder<static>|Group search($searchTerm)
+ * @method static Builder<static>|Group searchScout($searchTerm)
+ * @method static Builder<static>|Group whereCreatedAt($value)
+ * @method static Builder<static>|Group whereDeletedAt($value)
+ * @method static Builder<static>|Group whereEan($value)
+ * @method static Builder<static>|Group whereId($value)
+ * @method static Builder<static>|Group whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Group extends Model
 {
