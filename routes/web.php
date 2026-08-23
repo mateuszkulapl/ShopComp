@@ -23,7 +23,7 @@ Route::controller(ShopController::class)->group(function () {
 
 Route::controller(CategoryController::class)->group(function () {
     Route::get('sklep/{shop}/kategoria/', 'index')->name('category.index')->whereNumber('shop');
-    Route::get('sklep/{shop}/kategoria/{category}', 'show')->name('category.show')->whereNumber('shop', 'category');
+    Route::get('sklep/{shop}/kategoria/{category}', 'show')->name('category.show')->whereNumber(['shop', 'category']);
 });
 
 Route::controller(CartController::class)->group(function () {
