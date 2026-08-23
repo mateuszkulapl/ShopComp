@@ -44,6 +44,11 @@ class Price extends Model
      */
     protected $visible = ['current', 'old', 'created_at', 'updated_at', 'created_now', 'updated_now'];
 
+    protected $casts = [
+        'current' => 'float',
+        'old' => 'float',
+    ];
+
     /**
      * Get the product that the price belongs to.
      */
