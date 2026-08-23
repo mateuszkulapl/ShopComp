@@ -123,4 +123,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    /*
+      |--------------------------------------------------------------------------
+      | Custom
+      |--------------------------------------------------------------------------
+      */
+    'editor' => [
+        'name' => env('APP_EDITOR_NAME', 'jetbrains'),
+        'href' => env('APP_EDITOR_HREF', 'jetbrains://phpstorm/navigate/reference?project=ShopComp&path={file}:{line}'),
+        //base path should be empty, but does not work because of \Illuminate\Foundation\Concerns\ResolvesDumpSource::resolveSourceHref implementation
+        'base_path' => env('APP_EDITOR_BASE_PATH', '.'),
+    ],
+
 ];
