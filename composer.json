@@ -12,10 +12,10 @@
         "php": "^8.2",
         "http-interop/http-factory-guzzle": "^1.2",
         "itsgoingd/clockwork": "^5.1",
-        "laravel/framework": "^12.0",
+        "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
         "laravel/scout": "^10.15",
-        "laravel/tinker": "^2.10.1",
+        "laravel/tinker": "^3.0",
         "livewire/livewire": "^3.6",
         "meilisearch/meilisearch-php": "^1.15",
         "predis/predis": "^3.0"
@@ -30,7 +30,7 @@
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^11.5.3",
+        "phpunit/phpunit": "^12.0",
         "rector/rector": "^2.6"
     },
     "autoload": {
