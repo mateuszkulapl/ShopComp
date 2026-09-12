@@ -164,8 +164,8 @@ class ApiController extends Controller
             $product->save(['timestamps' => false]);
             $product->created_now = $product->wasRecentlyCreated;
 
-            $priceOld = $p['price_old'] ?? null;
-            $price = $this->processPostedPrice($p['price_current'], $priceOld, $product, $creation_date);
+            $priceOld = isset($p['price_old']) ? (float) $p['price_old'] : null;
+            $price = $this->processPostedPrice((float) $p['price_current'], $priceOld, $product, $creation_date);
             $postedImages = isset($p['images']) ? $this->processPostedImages($p['images'], $product->id, $creation_date) : [];
 
             $categories = [];
@@ -216,8 +216,8 @@ class ApiController extends Controller
 
         $needsRedetail = $this->redetailPolicyResolver->resolve($shop)->needsRedetail($product, $p);
 
-        $priceOld = $p['price_old'] ?? null;
-        $this->processPostedPrice($p['price_current'], $priceOld, $product, $creation_date);
+        $priceOld = isset($p['price_old']) ? (float) $p['price_old'] : null;
+        $this->processPostedPrice((float) $p['price_current'], $priceOld, $product, $creation_date);
 
         return [
             'status_code' => 200,
