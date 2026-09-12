@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
-
-//use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
@@ -18,22 +17,25 @@ use Laravel\Scout\Searchable;
  * @property int $group_id
  * @property int $title tytuł produktu
  * @property string|null $url
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $detail_scraped_at
+ * @property Carbon|null $listing_scraped_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read Collection<int, \App\Models\Category> $categories
+ * @property-read Collection<int, Category> $categories
  * @property-read int|null $categories_count
- * @property-read \App\Models\Group $group
- * @property-read Collection<int, \App\Models\Image> $images
+ * @property-read Group $group
+ * @property-read Collection<int, Image> $images
  * @property-read int|null $images_count
- * @property-read \App\Models\Price|null $largestOriginalPrice
- * @property-read \App\Models\Price|null $latestPrice
- * @property-read \App\Models\Price|null $lowestOriginalPrice
- * @property-read \App\Models\Image|null $oldestImage
- * @property-read \App\Models\Price|null $oldestPrice
- * @property-read Collection<int, \App\Models\Price> $prices
+ * @property-read Price|null $largestOriginalPrice
+ * @property-read Price|null $latestPrice
+ * @property-read Price|null $lowestOriginalPrice
+ * @property-read Image|null $oldestImage
+ * @property-read Price|null $oldestPrice
+ * @property-read Collection<int, Price> $prices
  * @property-read int|null $prices_count
- * @property-read \App\Models\Shop $shop
+ * @property-read Shop $shop
+ *
  * @method static \Database\Factories\ProductFactory factory($count = null, $state = [])
  * @method static Builder<static>|Product newModelQuery()
  * @method static Builder<static>|Product newQuery()
@@ -46,6 +48,7 @@ use Laravel\Scout\Searchable;
  * @method static Builder<static>|Product whereTitle($value)
  * @method static Builder<static>|Product whereUpdatedAt($value)
  * @method static Builder<static>|Product whereUrl($value)
+ *
  * @mixin \Eloquent
  */
 class Product extends Model
@@ -53,10 +56,22 @@ class Product extends Model
     use HasFactory;
     use Searchable;
 
-    //use SoftDeletes;
+    // use SoftDeletes;
 
-    protected $fillable = ['shop_id', 'group_id', 'title', 'url', 'created_at', 'updated_at'];
+    protected $fillable = ['shop_id', 'group_id', 'title', 'url', 'detail_scraped_at', 'listing_scraped_at', 'created_at', 'updated_at'];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'detail_scraped_at' => 'datetime',
+            'listing_scraped_at' => 'datetime',
+        ];
+    }
 
     /**
      * The attributes that should be visible in arrays.
@@ -67,11 +82,10 @@ class Product extends Model
 
     private $chartPrices;
 
-
     public function toSearchableArray(): array
     {
         return [
-            'id' => (int)$this->id,
+            'id' => (int) $this->id,
             'title' => $this->title,
             'shop' => $this->shop->name,
             'url' => $this->url,
@@ -111,7 +125,6 @@ class Product extends Model
     {
         return true;
     }
-
 
     /**
      * Get the shop that the product belongs to.
@@ -158,7 +171,7 @@ class Product extends Model
      */
     public function latestPrice()
     {
-        return $this->hasOne(Price::class)->latestOfMany(); //retrieve the latest or oldest related model based on the model's primary key
+        return $this->hasOne(Price::class)->latestOfMany(); // retrieve the latest or oldest related model based on the model's primary key
     }
 
     /**
@@ -166,7 +179,7 @@ class Product extends Model
      */
     public function oldestPrice()
     {
-        return $this->hasOne(Price::class)->oldestOfMany(); //retrieve the latest or oldest related model based on the model's primary key
+        return $this->hasOne(Price::class)->oldestOfMany(); // retrieve the latest or oldest related model based on the model's primary key
     }
 
     /**
@@ -193,10 +206,9 @@ class Product extends Model
         return $this->belongsToMany(Category::class)->withTimestamps();
     }
 
-
     public function setChartPrices($chartPrices)
     {
-        $this->chartPrices=$chartPrices;
+        $this->chartPrices = $chartPrices;
     }
 
     public function getChartPrices()
