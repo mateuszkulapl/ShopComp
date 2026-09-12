@@ -1,5 +1,11 @@
 <?php
 
+use App\Models\Group;
+use App\Models\Image;
+use App\Models\Price;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 
 return [
@@ -104,5 +110,14 @@ return [
     */
 
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache_'),
+
+    'serializable_classes' => [
+        LengthAwarePaginator::class,
+        Collection::class,
+        Group::class,
+        Product::class,
+        Price::class,
+        Image::class,
+    ],
 
 ];
