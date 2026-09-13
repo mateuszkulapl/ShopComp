@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -74,7 +73,7 @@ class Group extends Model
     /**
      * Get all of the price for the group.
      */
-    public function prices()
+    public function prices():\Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(Price::class, Product::class);
     }
@@ -105,43 +104,57 @@ class Group extends Model
         return $this->hasOne(Product::class)->oldestOfMany();
     }
 
-    //todo: fix
-
     /**
-     * Get the group's price from 7 days
+     * Get the latest price of each product in the group, price can not be older than $cutOff
      */
-    public function priceWeekRange()
+    public function latestPriceRange(Carbon $cutOff): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        return $this->prices()->whereDate('prices.created_at', '>', Carbon::now()->subDays(7)); //it gets all the prices from the selected period, not the latest ones
+        return $this->prices()->whereDate('prices.created_at', '>', $cutOff)
+            ->select('prices.*')
+            ->whereIn('prices.id', function ($query) use ($cutOff) {
+                $query->selectRaw('MAX(p2.id)')
+                    ->from('prices as p2')
+                    ->whereColumn('p2.product_id', 'prices.product_id')
+                    ->where('p2.created_at', '>', $cutOff);
+            });
     }
 
-    /*
-    * Get the latest price of each product in the group, price can not be older then 7 days
-     * //TODO: fix this
-    */
-    public function latestPriceWeekRange()
+    /**
+     * Get the latest price of each product in the group, price can not be older than one week
+     */
+    public function latestPriceWeekRange(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        // return $users = DB::table('prices')->groupBy('prices.product_id')->whereDate('prices.created_at', '>',  Carbon::now()->subDays(7))->get();
-        return $this->prices()->whereDate('prices.created_at', '>', Carbon::now()->subDays(7))
-            ->select('prices.*')
-            ->join(DB::raw('(SELECT product_id, MAX(created_at) as latest_date FROM prices WHERE created_at > NOW() - INTERVAL 7 DAY GROUP BY product_id) as latest_prices'), function ($join) {
-                $join->on('prices.product_id', '=', 'latest_prices.product_id');
-            });
+        return $this->latestPriceRange(cutOff: Carbon::now()->subWeek()->startOfDay());
+    }
+
+    public function latestPriceMonthRange(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->latestPriceRange(cutOff: Carbon::now()->subMonth()->startOfDay());
+    }
+
+    public function displayLatestPriceRange($type = 'latestPriceMonthRange'): string
+    {
+        if (count($this->$type) > 0) {
+            $min = (float)$this->$type->min('current');
+            $max = (float)$this->$type->max('current');
+            if ($min !== $max) {
+                return 'Cena od ' . number_format($min, 2, ',', '') . ' zł do ' . number_format($max, 2, ',', '') . ' zł';
+            }
+
+            return 'Cena ' . number_format($min, 2, ',', '') . ' zł';
+        }
+
+        return '';
     }
 
     public function displayLatestPriceWeekRange(): string
     {
+        return $this->displayLatestPriceRange('latestPriceWeekRange');
+    }
 
-        if (count($this->latestPriceWeekRange) > 0) {
-            $min = (float) $this->latestPriceWeekRange->min('current');
-            $max = (float) $this->latestPriceWeekRange->max('current');
-            if ($min !== $max)
-                return 'Cena od ' . number_format($min, 2, ",", "") . ' zł do ' . number_format($max, 2, ",", "") . " zł";
-
-            return 'Cena ' . number_format($min, 2, ",", "") . ' zł';
-        }
-
-        return '';
+    public function displayLatestPriceMonthRange(): string
+    {
+        return $this->displayLatestPriceRange('latestPriceMonthRange');
     }
 
     /**
