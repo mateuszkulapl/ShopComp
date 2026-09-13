@@ -16,7 +16,7 @@ use Laravel\Scout\Searchable;
  * @property int $id
  * @property int $shop_id
  * @property int $group_id
- * @property int $title tytuł produktu
+ * @property string $title tytuł produktu
  * @property string|null $url
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
