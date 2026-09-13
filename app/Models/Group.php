@@ -73,7 +73,7 @@ class Group extends Model
     /**
      * Get all of the price for the group.
      */
-    public function prices()
+    public function prices():\Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(Price::class, Product::class);
     }
@@ -104,13 +104,11 @@ class Group extends Model
         return $this->hasOne(Product::class)->oldestOfMany();
     }
 
-    /*
-    * Get the latest price of each product in the group, price can not be older than x
-    */
-    public function latestPriceRange($days = 31)
+    /**
+     * Get the latest price of each product in the group, price can not be older than $cutOff
+     */
+    public function latestPriceRange(Carbon $cutOff): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        $cutOff = Carbon::now()->subDays($days);
-
         return $this->prices()->whereDate('prices.created_at', '>', $cutOff)
             ->select('prices.*')
             ->whereIn('prices.id', function ($query) use ($cutOff) {
@@ -121,17 +119,17 @@ class Group extends Model
             });
     }
 
-    /*
-    * Get the latest price of each product in the group, price can not be older then 7 days
-    */
-    public function latestPriceWeekRange()
+    /**
+     * Get the latest price of each product in the group, price can not be older than one week
+     */
+    public function latestPriceWeekRange(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        return $this->latestPriceRange(days: 7);
+        return $this->latestPriceRange(cutOff: Carbon::now()->subWeek()->startOfDay());
     }
 
-    public function latestPriceMonthRange()
+    public function latestPriceMonthRange(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        return $this->latestPriceRange(days: 31);
+        return $this->latestPriceRange(cutOff: Carbon::now()->subMonth()->startOfDay());
     }
 
     public function displayLatestPriceRange($type = 'latestPriceMonthRange'): string
