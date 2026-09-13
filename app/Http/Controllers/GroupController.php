@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Str;
 use App\Models\Group;
-use App\Models\Product;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class GroupController extends Controller
@@ -16,7 +14,7 @@ class GroupController extends Controller
     public function index($searchTerm = null)
     {
         $searchExamples = collect();
-        $groups = Group::with('oldestProduct', 'latestPriceWeekRange', 'oldestProduct.oldestImage');
+        $groups = Group::with('oldestProduct', 'latestPriceMonthRange', 'oldestProduct.oldestImage');
         if ($searchTerm) {
             $groups = $groups->search($searchTerm);
             $title = $searchTerm . ' - wyniki wyszukiwania';

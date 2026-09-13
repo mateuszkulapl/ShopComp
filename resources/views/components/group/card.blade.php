@@ -24,7 +24,7 @@
         </h2>
     </div>
     <div class="px-2 pb-2 pt-1 mt-auto bg-slate-600  group-hover:bg-slate-500 duration-100 hover:duration-300 rounded-b-md ">
-        <p class=" text-sm">{{ $group->displayLatestPriceWeekRange() }}</p>
+        <p class=" text-sm">{{ $group->displaylatestPriceMonthRange() }}</p>
         <p class="text-sm">{{ $group->getProductNumberText() }}</p>
     </div>
 </div>
