@@ -4,6 +4,7 @@ use App\Models\Group;
 use App\Models\Image;
 use App\Models\Price;
 use App\Models\Product;
+use App\Models\Shop;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
@@ -118,6 +119,7 @@ return [
         Product::class,
         Price::class,
         Image::class,
+        Shop::class,
     ],
 
 ];
