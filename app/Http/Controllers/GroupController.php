@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,45 +21,47 @@ class GroupController extends Controller
         $groups = Group::with('oldestProduct', 'latestPriceMonthRange', 'oldestProduct.oldestImage');
         if ($searchTerm) {
             $groups = $groups->search($searchTerm);
-            $title = $searchTerm . ' - wyniki wyszukiwania';
+            $title = $searchTerm.' - wyniki wyszukiwania';
             $appendTitleSuffix = true;
         } else {
             $title = null;
             $appendTitleSuffix = false;
             $searchExamplesAll = collect();
-            //TODO: move to admin panel
-            $searchExamplesAll->push("Milka", "Sok pomarańczowy", "Masło", "Lay's", "Mleko", "Dżem", "Parówki", "Actimel", "Herbata", "Kawa ", "Prince Polo", "Dżem", "Makaron", "Płatki śniadaniowe", "Cukier", "Mąka ");
+            // TODO: move to admin panel
+            $searchExamplesAll->push('Milka', 'Sok pomarańczowy', 'Masło', "Lay's", 'Mleko', 'Dżem', 'Parówki', 'Actimel', 'Herbata', 'Kawa ', 'Prince Polo', 'Dżem', 'Makaron', 'Płatki śniadaniowe', 'Cukier', 'Mąka ');
             $searchExamples = $searchExamplesAll->random(3);
         }
 
         $currentPage = request()->get('page', 1);
-        //cache only first page of homepage without search term
-        if($currentPage == 1 && $searchTerm == null)
-        $groups = Cache::remember('homepageGroups_page-' . $currentPage, ($currentPage == 1 && $searchTerm == null) ? now()->addMinutes(10) : 0, function () use ($groups) {
-            return $groups->withCount('products')->orderByDesc('products_count')->orderBy('id', 'desc')->paginate(30);
-        });
-        else
-        $groups = $groups->withCount('products')->orderByDesc('products_count')->orderBy('id', 'desc')->paginate(30);
+        // cache only first page of homepage without search term
+        if ($currentPage == 1 && $searchTerm == null) {
+            $groups = Cache::remember('homepageGroups_page-'.$currentPage, ($currentPage == 1 && $searchTerm == null) ? now()->addMinutes(10) : 0, function () use ($groups) {
+                return $groups->withCount('products')->orderByDesc('products_count')->orderBy('id', 'desc')->paginate(30);
+            });
+        } else {
+            $groups = $groups->withCount('products')->orderByDesc('products_count')->orderBy('id', 'desc')->paginate(30);
+        }
 
-
-        if ($searchTerm != null && $groups->total() == 1 && $groups->items()[0]->ean == $searchTerm)
+        if ($searchTerm != null && $groups->total() == 1 && $groups->items()[0]->ean == $searchTerm) {
             return redirect($groups->items()[0]->appUrl, 301);
+        }
 
         $httpCode = $groups->total() == 0 ? Response::HTTP_NOT_FOUND : Response::HTTP_OK;
+
         return response()->view('group.index', [
             'groups' => $groups,
             'searchTerm' => $searchTerm,
             'title' => $title,
             'appendTitleSuffix' => $appendTitleSuffix,
             'breadcumbs' => collect(),
-            'searchExamples' => $searchExamples
+            'searchExamples' => $searchExamples,
         ], $httpCode);
     }
 
-    public function searchPost(): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+    public function searchPost(): Redirector|RedirectResponse
     {
         request()->validate([
-            'search' => ['required']
+            'search' => ['required'],
         ]);
         return redirect(
             route(
@@ -65,9 +71,7 @@ class GroupController extends Controller
         );
     }
 
-
-
-    public function getShowView(Group $group): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+    public function getShowView(Group $group): Factory|View
     {
         $products = $group->products()->with('shop', 'prices', 'images', 'categories', 'categories.shop')->get();
         $products = $products->keyBy('id');
@@ -88,6 +92,7 @@ class GroupController extends Controller
         $priceTable = $priceTable->map(function ($price) {
             $price->startOfDay = $price->created_at->startOfDay()->getTimestampMs();
             $price->date = $price->created_at->startOfDay()->format('d.m.Y');
+
             return $price;
         });
 
@@ -106,8 +111,7 @@ class GroupController extends Controller
             return $item->keyBy('product_id');
         });
 
-        $apexchartPalette = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0']; //TODO: fix colors for more than 5 shops
-
+        $apexchartPalette = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0']; // TODO: fix colors for more than 5 shops
 
         $priceTableGroupedByProduct = $priceTable->groupBy('product_id');
         $priceTableGroupedByProduct = $priceTableGroupedByProduct->map(function ($item) {
@@ -129,7 +133,7 @@ class GroupController extends Controller
         $index = 0;
         $apexchartPaletteSize = count($apexchartPalette);
         foreach ($products as $product) {
-            $product->color = $apexchartPalette[($index++) % $apexchartPaletteSize] . "";
+            $product->color = $apexchartPalette[($index++) % $apexchartPaletteSize].'';
         }
 
         $breadcumbs = collect();
@@ -143,7 +147,7 @@ class GroupController extends Controller
         ]);
     }
 
-    public function show(Group $group, String $oldestProductTitleSlug = ''): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+    public function show(Group $group, string $oldestProductTitleSlug = ''): Factory|View|Redirector|RedirectResponse
     {
         $correctOldestProductTitleSlug = $group->oldestProduct ? Str::slug($group->oldestProduct->title) : '';
         if ($correctOldestProductTitleSlug == $oldestProductTitleSlug) {
