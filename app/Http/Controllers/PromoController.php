@@ -14,8 +14,8 @@ class PromoController extends Controller
         $recent = now()->subDays(30);
         $currentPage = request()->get('page', 1);
 
-        //todo: refactor
-        $results = Cache::remember(key: 'promo_page-' . $currentPage . '-' . $search,
+        // todo: refactor
+        $results = Cache::remember(key: 'promo_page-'.$currentPage.'-'.$search,
             ttl: $search == null ? now()->addHours(1) : now()->addHours(1),
             callback: function () use ($recent, $search) {
 
@@ -49,6 +49,74 @@ class PromoController extends Controller
                     ])
                     ->selectRaw('MIN(sp2.shop_min_price) as competitor_min_price');
 
+                $promoSnapshots = DB::table('products')
+                    ->join('prices', 'prices.product_id', '=', 'products.id')
+                    ->joinSub($competitorPrices, 'competitors', function ($join) {
+                        $join
+                            ->on('competitors.group_id', '=', 'products.group_id')
+                            ->on('competitors.shop_id', '=', 'products.shop_id');
+                    })
+                    ->where('prices.created_at', '>', $recent)
+                    ->whereNotNull('prices.old')
+                    ->where('prices.old', '>', 0)
+                    ->whereColumn('prices.current', '<', 'prices.old')
+
+                    // compare to old price in the same shop, or other shop price
+                    ->whereRaw(
+                        'prices.current < LEAST(prices.old, competitors.competitor_min_price)'
+                    )
+                    ->select('products.id as product_id')
+                    ->selectRaw('prices.id as price_id')
+                    ->selectRaw('prices.created_at as price_created_at')
+                    ->selectRaw('prices.current as price_current')
+                    ->selectRaw('prices.old as price_old')
+                    ->selectRaw('competitors.competitor_min_price as competitor_min_price')
+                    ->selectRaw('
+    LEAST(
+        prices.old,
+        competitors.competitor_min_price
+    ) as promo_reference_price
+')
+                    ->selectRaw('
+    LEAST(
+        prices.old,
+        competitors.competitor_min_price
+    ) - prices.current as promo_pln
+')
+                    ->selectRaw('
+    ROUND(
+        (
+            1 - prices.current /
+            LEAST(prices.old, competitors.competitor_min_price)
+        ) * 100
+    ) as promo_percent
+')
+                    // do not use absolute discount or relative discount, use custom indicator
+                    ->selectRaw('
+    ROUND(
+        (
+            1 - prices.current /
+            LEAST(prices.old, competitors.competitor_min_price)
+        )
+        *
+        SQRT(
+            LEAST(prices.old, competitors.competitor_min_price)
+            - prices.current
+        )
+        * 100
+    , 2) as promo_score
+');
+
+                $bestPromoSnapshots = DB::query()
+                    ->fromSub($promoSnapshots, 'snapshots')
+                    ->select('snapshots.*')
+                    ->selectRaw('
+    ROW_NUMBER() OVER (
+        PARTITION BY snapshots.product_id
+        ORDER BY snapshots.promo_score DESC, snapshots.price_created_at DESC, snapshots.price_id DESC
+    ) as snapshot_rank
+');
+
                 return Product::with([
                     'images',
                     'group:id,ean',
@@ -78,61 +146,23 @@ class PromoController extends Controller
                     ->when($search, function ($query, $search) {
                         $query->where('products.title', 'like', "%{$search}%");
                     })
-                    ->join('prices', 'prices.product_id', '=', 'products.id')
-                    ->joinSub($competitorPrices, 'competitors', function ($join) {
+                    ->joinSub($bestPromoSnapshots, 'promos', function ($join) {
                         $join
-                            ->on('competitors.group_id', '=', 'products.group_id')
-                            ->on('competitors.shop_id', '=', 'products.shop_id');
+                            ->on('promos.product_id', '=', 'products.id')
+                            ->where('promos.snapshot_rank', '=', 1);
                     })
-                    ->where('prices.created_at', '>', $recent)
-                    ->whereNotNull('prices.old')
-                    ->where('prices.old', '>', 0)
-                    ->whereColumn('prices.current', '<', 'prices.old')
-
-                    //compare to old price in the same shop, or other shop price
-                    ->whereRaw(
-                        'prices.current < LEAST(prices.old, competitors.competitor_min_price)'
-                    )
                     ->select('products.*')
-                    ->selectRaw('prices.current as price_current')
-                    ->selectRaw('prices.old as price_old')
-                    ->selectRaw('competitors.competitor_min_price as competitor_min_price')
-                    ->selectRaw('
-    LEAST(
-        prices.old,
-        competitors.competitor_min_price
-    ) as promo_reference_price
-')
-                    ->selectRaw('
-    LEAST(
-        prices.old,
-        competitors.competitor_min_price
-    ) - prices.current as promo_pln
-')
-                    ->selectRaw('
-    ROUND(
-        (
-            1 - prices.current /
-            LEAST(prices.old, competitors.competitor_min_price)
-        ) * 100
-    ) as promo_percent
-')
-                    //do not use absolute discount or relative discount, use custom indicator
-                    ->selectRaw('
-    ROUND(
-        (
-            1 - prices.current /
-            LEAST(prices.old, competitors.competitor_min_price)
-        )
-        *
-        SQRT(
-            LEAST(prices.old, competitors.competitor_min_price)
-            - prices.current
-        )
-        * 100
-    , 2) as promo_score
-')
-                    ->orderByDesc('promo_score')
+                    ->addSelect([
+                        'promos.price_current',
+                        'promos.price_old',
+                        'promos.competitor_min_price',
+                        'promos.promo_reference_price',
+                        'promos.promo_pln',
+                        'promos.promo_percent',
+                        'promos.promo_score',
+                    ])
+                    ->orderByDesc('promos.promo_score')
+                    ->orderBy('products.id')
                     ->paginate(100);
             });
 
