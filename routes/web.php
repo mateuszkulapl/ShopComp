@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\PromoController;
 use App\Http\Controllers\ShopController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,3 +34,9 @@ Route::controller(CartController::class)->group(function () {
         ->where('eans', '([0-9]+,?)+')
         ->name('cart.index');
 });
+
+Route::controller(PromoController::class)->prefix('promo')->name('promo.')
+    ->middleware(\App\Http\Middleware\PromoMiddleware::class)
+    ->group(function () {
+        Route::get('', 'index')->name('index');
+    });
