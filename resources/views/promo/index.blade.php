@@ -34,7 +34,7 @@
             </table>
 
             <div class="mt-4">
-                {{ $products->onEachSide(1)->links() }}
+{{ $products->withQueryString()->onEachSide(1)->links() }}
             </div>
 
         </div>
