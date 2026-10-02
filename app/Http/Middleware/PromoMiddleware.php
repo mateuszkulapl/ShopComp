@@ -22,11 +22,11 @@ class PromoMiddleware
 
     private function hasAccess(Request $request): bool
     {
-        if (config('promo.enabled')) {
+        if (config('features.promo.enabled')) {
             return true;
         }
 
-        $configKey = config('promo.key');
+        $configKey = config('features.promo.key');
         $cookieKey = $request->cookie('key');
         return is_string($configKey) && $configKey !== '' && is_string($cookieKey)
             && hash_equals($configKey, $cookieKey);
