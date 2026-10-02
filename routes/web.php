@@ -35,7 +35,7 @@ Route::controller(CartController::class)->group(function () {
         ->name('cart.index');
 });
 
-Route::controller(PromoController::class)->prefix('promo')->name('promo')
+Route::controller(PromoController::class)->prefix('promo')->name('promo.')
     ->middleware(\App\Http\Middleware\PromoMiddleware::class)
     ->group(function () {
         Route::get('', 'index')->name('index');
